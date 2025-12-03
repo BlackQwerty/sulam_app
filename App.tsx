@@ -11,9 +11,10 @@ import ProductScreen from './screens/ProductScreen';
 import NewSaleScreen from './screens/NewSaleScreen';
 import FarmLocationScreen from './screens/FarmLocationScreen';
 import CustomerAssistantScreen from './screens/CustomerAssistantScreen';
+import AboutUsScreen from './screens/AboutUsScreen';
 import PineappleIcon from './assets/pineapple.svg';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -37,6 +38,7 @@ export default function App() {
         onNavigateToNewSale={() => setCurrentScreen('newsale')}
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
       />
     );
   }
@@ -71,6 +73,15 @@ export default function App() {
     return (
       <CustomerAssistantScreen
         onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'about') {
+    return (
+      <AboutUsScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
       />
     );
   }

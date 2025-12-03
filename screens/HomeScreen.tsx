@@ -12,9 +12,10 @@ interface HomeScreenProps {
   onNavigateToNewSale?: () => void;
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
 }
 
-export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, onNavigateToLocation, onNavigateToAssistant }: HomeScreenProps) {
+export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, onNavigateToLocation, onNavigateToAssistant, onNavigateToAbout }: HomeScreenProps) {
   const handleProfilePress = () => {
     console.log('Profile pressed');
   };
@@ -43,6 +44,8 @@ export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, o
       onNavigateToProduct();
     } else if (menu === 'Location' && onNavigateToLocation) {
       onNavigateToLocation();
+    } else if (menu === 'About Us' && onNavigateToAbout) {
+      onNavigateToAbout();
     }
   };
 
