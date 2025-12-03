@@ -39,6 +39,7 @@ export default function App() {
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
+        onLogout={() => setCurrentScreen('welcome')}
       />
     );
   }
@@ -48,6 +49,7 @@ export default function App() {
       <ProductScreen
         onNavigateHome={() => setCurrentScreen('home')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onLogout={() => setCurrentScreen('welcome')}
       />
     );
   }
@@ -56,6 +58,8 @@ export default function App() {
     return (
       <NewSaleScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onLogout={() => setCurrentScreen('welcome')}
       />
     );
   }
@@ -65,6 +69,7 @@ export default function App() {
       <FarmLocationScreen
         onNavigateHome={() => setCurrentScreen('home')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onLogout={() => setCurrentScreen('welcome')}
       />
     );
   }
@@ -73,6 +78,7 @@ export default function App() {
     return (
       <CustomerAssistantScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onLogout={() => setCurrentScreen('welcome')}
       />
     );
   }
@@ -82,6 +88,7 @@ export default function App() {
       <AboutUsScreen
         onNavigateHome={() => setCurrentScreen('home')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onLogout={() => setCurrentScreen('welcome')}
       />
     );
   }

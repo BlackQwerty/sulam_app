@@ -1,18 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { UserCircle, Headset, Home } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
+import ProfileSidebar from '../components/ProfileSidebar';
 
 interface ProductScreenProps {
   onNavigateHome?: () => void;
   onNavigateToAssistant?: () => void;
+  onLogout?: () => void;
 }
 
-export default function ProductScreen({ onNavigateHome, onNavigateToAssistant }: ProductScreenProps) {
+export default function ProductScreen({ onNavigateHome, onNavigateToAssistant, onLogout }: ProductScreenProps) {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
   const handleProfilePress = () => {
-    console.log('Profile pressed');
+    setIsSidebarVisible(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarVisible(false);
+  };
+
+  const handleLogout = () => {
+    setIsSidebarVisible(false);
+    if (onLogout) {
+      onLogout();
+    }
   };
 
   const handleCustomerServicePress = () => {
@@ -65,6 +80,12 @@ export default function ProductScreen({ onNavigateHome, onNavigateToAssistant }:
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
+
+      <ProfileSidebar
+        isVisible={isSidebarVisible}
+        onClose={handleCloseSidebar}
+        onLogout={handleLogout}
+      />
 
       {/* Header */}
       <View style={styles.header}>

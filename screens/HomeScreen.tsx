@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset } from 'lucide-react-native';
 import BannerCard from '../components/BannerCard';
 import MenuButton from '../components/MenuButton';
+import ProfileSidebar from '../components/ProfileSidebar';
 import PineappleIcon from '../assets/pineapple.svg';
 
 interface HomeScreenProps {
@@ -13,11 +14,32 @@ interface HomeScreenProps {
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
   onNavigateToAbout?: () => void;
+  onLogout?: () => void;
 }
 
-export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, onNavigateToLocation, onNavigateToAssistant, onNavigateToAbout }: HomeScreenProps) {
+export default function HomeScreen({
+  onNavigateToProduct,
+  onNavigateToNewSale,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onLogout
+}: HomeScreenProps) {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
   const handleProfilePress = () => {
-    console.log('Profile pressed');
+    setIsSidebarVisible(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarVisible(false);
+  };
+
+  const handleLogout = () => {
+    setIsSidebarVisible(false);
+    if (onLogout) {
+      onLogout();
+    }
   };
 
   const handleNotificationPress = () => {
@@ -52,6 +74,12 @@ export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, o
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
+
+      <ProfileSidebar
+        isVisible={isSidebarVisible}
+        onClose={handleCloseSidebar}
+        onLogout={handleLogout}
+      />
 
       {/* Header */}
       <View style={styles.header}>

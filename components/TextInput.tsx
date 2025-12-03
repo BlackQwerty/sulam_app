@@ -5,10 +5,10 @@ interface CustomTextInputProps extends TextInputProps {
   placeholder: string;
 }
 
-export default function TextInput({ placeholder, ...props }: CustomTextInputProps) {
+export default function TextInput({ placeholder, style, ...props }: CustomTextInputProps) {
   return (
     <RNTextInput
-      style={styles.input}
+      style={[styles.input, style]}
       placeholder={placeholder}
       placeholderTextColor="#999"
       {...props}
@@ -18,7 +18,7 @@ export default function TextInput({ placeholder, ...props }: CustomTextInputProp
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: '#E8F0F2',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 20,

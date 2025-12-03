@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { UserCircle, Headset, Phone, Mail, Home } from 'lucide-react-native';
+import ProfileSidebar from '../components/ProfileSidebar';
 
 interface CustomerAssistantScreenProps {
   onNavigateHome?: () => void;
+  onLogout?: () => void;
 }
 
-export default function CustomerAssistantScreen({ onNavigateHome }: CustomerAssistantScreenProps) {
+export default function CustomerAssistantScreen({ onNavigateHome, onLogout }: CustomerAssistantScreenProps) {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
   const handleProfilePress = () => {
-    console.log('Profile pressed');
+    setIsSidebarVisible(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarVisible(false);
+  };
+
+  const handleLogout = () => {
+    setIsSidebarVisible(false);
+    if (onLogout) {
+      onLogout();
+    }
   };
 
   const handleDirectCall = async () => {
@@ -50,6 +65,12 @@ export default function CustomerAssistantScreen({ onNavigateHome }: CustomerAssi
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
+
+      <ProfileSidebar
+        isVisible={isSidebarVisible}
+        onClose={handleCloseSidebar}
+        onLogout={handleLogout}
+      />
 
       {/* Header */}
       <View style={styles.header}>
