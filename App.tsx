@@ -13,8 +13,12 @@ import FarmLocationScreen from './screens/FarmLocationScreen';
 import CustomerAssistantScreen from './screens/CustomerAssistantScreen';
 import PineappleIcon from './assets/pineapple.svg';
 import PineBotScreen from './screens/PineBotScreen';
+import OrderTrackingScreen from './screens/OrderTrackingScreen';
+import FarmerDashboardScreen from './screens/FarmerDashboardScreen';
+import WeatherAdvisoryScreen from './screens/WeatherAdvisoryScreen';
+import PaymentManagementScreen from './screens/PaymentManagementScreen';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant'| 'pinebot';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -39,6 +43,10 @@ export default function App() {
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToPineBot={() => setCurrentScreen('pinebot')}
+        onNavigateToOrderTracking={() => setCurrentScreen('ordertracking')}
+        onNavigateToDashboard={() => setCurrentScreen('dashboard')}
+        onNavigateToWeather={() => setCurrentScreen('weather')}
+        onNavigateToPayment={() => setCurrentScreen('payment')}
       />
     );
   }
@@ -85,6 +93,38 @@ export default function App() {
     );
   }
 
+  if (currentScreen === 'ordertracking') {
+    return (
+      <OrderTrackingScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'dashboard') {
+    return (
+      <FarmerDashboardScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'weather') {
+    return (
+      <WeatherAdvisoryScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'payment') {
+    return (
+      <PaymentManagementScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
   if (currentScreen === 'signup') {
     return (
       <SignUpScreen
@@ -93,7 +133,7 @@ export default function App() {
         onSignUpSuccess={() => setCurrentScreen('home')}
       />
     );
-    
+
   }
 
   if (currentScreen === 'login') {

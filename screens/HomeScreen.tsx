@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset } from 'lucide-react-native';
+import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset, Truck, LayoutDashboard, CloudSun, CreditCard } from 'lucide-react-native';
 import BannerCard from '../components/BannerCard';
 import MenuButton from '../components/MenuButton';
 import PineappleIcon from '../assets/pineapple.svg';
@@ -13,9 +13,23 @@ interface HomeScreenProps {
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
   onNavigateToPineBot: () => void;
+  onNavigateToOrderTracking?: () => void;
+  onNavigateToDashboard?: () => void;
+  onNavigateToWeather?: () => void;
+  onNavigateToPayment?: () => void;
 }
 
-export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, onNavigateToLocation, onNavigateToAssistant , onNavigateToPineBot }: HomeScreenProps) {
+export default function HomeScreen({
+  onNavigateToProduct,
+  onNavigateToNewSale,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToPineBot,
+  onNavigateToOrderTracking,
+  onNavigateToDashboard,
+  onNavigateToWeather,
+  onNavigateToPayment
+}: HomeScreenProps) {
   const handleProfilePress = () => {
     console.log('Profile pressed');
   };
@@ -72,8 +86,8 @@ export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, o
           <Headset size={28} color="#fff" />
         </TouchableOpacity>
       </View>
-      
-      
+
+
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -117,8 +131,34 @@ export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, o
             <MenuButton
               title="PINE-BOT"
               icon={<Bot size={48} color="#fff" />}
-               onPress={onNavigateToPineBot}
-              //onPress={() => handleMenuPress('Pine-Bot')}
+              onPress={onNavigateToPineBot}
+            />
+          </View>
+
+          {/* New Features Grid */}
+          <View style={styles.menuRow}>
+            <MenuButton
+              title="ORDERS"
+              icon={<Truck size={48} color="#fff" />}
+              onPress={onNavigateToOrderTracking}
+            />
+            <MenuButton
+              title="DASHBOARD"
+              icon={<LayoutDashboard size={48} color="#fff" />}
+              onPress={onNavigateToDashboard}
+            />
+          </View>
+
+          <View style={styles.menuRow}>
+            <MenuButton
+              title="WEATHER"
+              icon={<CloudSun size={48} color="#fff" />}
+              onPress={onNavigateToWeather}
+            />
+            <MenuButton
+              title="PAYMENT"
+              icon={<CreditCard size={48} color="#fff" />}
+              onPress={onNavigateToPayment}
             />
           </View>
         </View>
