@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import TextInput from '../components/TextInput';
@@ -10,9 +11,10 @@ import PineappleIcon from '../assets/pineapple.svg';
 interface SignUpScreenProps {
   onBack: () => void;
   onNavigateToLogin: () => void;
+  onSignUpSuccess?: () => void;
 }
 
-export default function SignUpScreen({ onBack, onNavigateToLogin }: SignUpScreenProps) {
+export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSuccess }: SignUpScreenProps) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +23,10 @@ export default function SignUpScreen({ onBack, onNavigateToLogin }: SignUpScreen
 
   const handleSignUp = () => {
     console.log('Sign Up:', { username, email, password, confirmPassword, rememberPassword });
+    // Navigate to home screen after successful signup
+    if (onSignUpSuccess) {
+      onSignUpSuccess();
+    }
   };
 
   return (

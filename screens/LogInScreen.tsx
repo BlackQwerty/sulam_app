@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import TextInput from '../components/TextInput';
@@ -9,15 +10,20 @@ import PineappleIcon from '../assets/pineapple.svg';
 
 interface LogInScreenProps {
   onBack: () => void;
+  onLoginSuccess?: () => void;
 }
 
-export default function LogInScreen({ onBack }: LogInScreenProps) {
+export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
 
   const handleLogIn = () => {
     console.log('Log In:', { username, password, rememberPassword });
+    // Navigate to home screen after successful login
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    }
   };
 
   return (
