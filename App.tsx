@@ -12,8 +12,9 @@ import NewSaleScreen from './screens/NewSaleScreen';
 import FarmLocationScreen from './screens/FarmLocationScreen';
 import CustomerAssistantScreen from './screens/CustomerAssistantScreen';
 import PineappleIcon from './assets/pineapple.svg';
+import PineBotScreen from './screens/PineBotScreen';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant'| 'pinebot';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -37,6 +38,7 @@ export default function App() {
         onNavigateToNewSale={() => setCurrentScreen('newsale')}
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
       />
     );
   }
@@ -75,6 +77,14 @@ export default function App() {
     );
   }
 
+  if (currentScreen === 'pinebot') {
+    return (
+      <PineBotScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
   if (currentScreen === 'signup') {
     return (
       <SignUpScreen
@@ -83,6 +93,7 @@ export default function App() {
         onSignUpSuccess={() => setCurrentScreen('home')}
       />
     );
+    
   }
 
   if (currentScreen === 'login') {

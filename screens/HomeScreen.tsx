@@ -12,9 +12,10 @@ interface HomeScreenProps {
   onNavigateToNewSale?: () => void;
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
+  onNavigateToPineBot: () => void;
 }
 
-export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, onNavigateToLocation, onNavigateToAssistant }: HomeScreenProps) {
+export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, onNavigateToLocation, onNavigateToAssistant , onNavigateToPineBot }: HomeScreenProps) {
   const handleProfilePress = () => {
     console.log('Profile pressed');
   };
@@ -71,7 +72,8 @@ export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, o
           <Headset size={28} color="#fff" />
         </TouchableOpacity>
       </View>
-
+      
+      
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -115,7 +117,8 @@ export default function HomeScreen({ onNavigateToProduct, onNavigateToNewSale, o
             <MenuButton
               title="PINE-BOT"
               icon={<Bot size={48} color="#fff" />}
-              onPress={() => handleMenuPress('Pine-Bot')}
+               onPress={onNavigateToPineBot}
+              //onPress={() => handleMenuPress('Pine-Bot')}
             />
           </View>
         </View>
