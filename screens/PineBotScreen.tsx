@@ -13,9 +13,16 @@ import {
   Keyboard,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ChevronLeft } from 'lucide-react-native';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface PineBotScreenProps {
   onNavigateHome?: () => void;
+  onNavigateToProduct?: () => void;
+  onNavigateToLocation?: () => void;
+  onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
+  onNavigateToPineBot?: () => void;
 }
 
 type MessageType = {
@@ -25,7 +32,14 @@ type MessageType = {
   timestamp: Date;
 };
 
-const PineBotScreen = ({ onNavigateHome }: PineBotScreenProps) => {
+const PineBotScreen = ({
+  onNavigateHome,
+  onNavigateToProduct,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onNavigateToPineBot
+}: PineBotScreenProps) => {
   const [messages, setMessages] = useState<MessageType[]>([
     {
       id: '1',
@@ -164,7 +178,7 @@ const PineBotScreen = ({ onNavigateHome }: PineBotScreenProps) => {
           style={styles.backButton}
           onPress={onNavigateHome}
         >
-          <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
+          <ChevronLeft size={32} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Pine-Bot</Text>
@@ -242,11 +256,15 @@ const PineBotScreen = ({ onNavigateHome }: PineBotScreenProps) => {
       </KeyboardAvoidingView>
 
       {/* Bottom Navigation Bar */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={onNavigateHome}>
-          <Ionicons name="home" size={32} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="pinebot"
+        onNavigateHome={onNavigateHome || (() => { })}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+        onNavigateToPineBot={onNavigateToPineBot || (() => { })}
+      />
     </SafeAreaView>
   );
 };

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Headset, Phone, Mail } from 'lucide-react-native';
-import ProfileSidebar from '../components/ProfileSidebar';
+import { ChevronLeft, Headset, Phone, Mail } from 'lucide-react-native';
 import BottomNavBar from '../components/BottomNavBar';
 
 interface CustomerAssistantScreenProps {
@@ -12,6 +11,7 @@ interface CustomerAssistantScreenProps {
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
   onNavigateToAbout?: () => void;
+  onNavigateToPineBot?: () => void;
   onLogout?: () => void;
 }
 
@@ -21,24 +21,9 @@ export default function CustomerAssistantScreen({
   onNavigateToLocation,
   onNavigateToAssistant,
   onNavigateToAbout,
+  onNavigateToPineBot,
   onLogout
 }: CustomerAssistantScreenProps) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-
-  const handleProfilePress = () => {
-    setIsSidebarVisible(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setIsSidebarVisible(false);
-  };
-
-  const handleLogout = () => {
-    setIsSidebarVisible(false);
-    if (onLogout) {
-      onLogout();
-    }
-  };
 
   const handleDirectCall = async () => {
     const phoneNumber = '+07-236 1211';
@@ -78,22 +63,13 @@ export default function CustomerAssistantScreen({
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <ProfileSidebar
-        isVisible={isSidebarVisible}
-        onClose={handleCloseSidebar}
-        onLogout={handleLogout}
-      />
-
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handleProfilePress}
+          style={styles.backButton}
+          onPress={onNavigateHome}
         >
-          <View style={styles.profileIconContainer}>
-            <UserCircle size={32} color="#fff" />
-          </View>
-          <Text style={styles.profileText}>Farmer</Text>
+          <ChevronLeft size={32} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Customer{'\n'}Assistant</Text>
@@ -137,6 +113,7 @@ export default function CustomerAssistantScreen({
         onNavigateToLocation={onNavigateToLocation || (() => { })}
         onNavigateToAssistant={onNavigateToAssistant || (() => { })}
         onNavigateToAbout={onNavigateToAbout || (() => { })}
+        onNavigateToPineBot={onNavigateToPineBot || (() => { })}
       />
     </SafeAreaView>
   );
@@ -155,8 +132,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#065b66',
   },
-  profileButton: {
-    alignItems: 'center',
+  backButton: {
+    padding: 5,
   },
   profileIconContainer: {
     marginBottom: 4,

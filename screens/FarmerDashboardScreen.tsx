@@ -9,9 +9,16 @@ import {
     Dimensions,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ChevronLeft } from 'lucide-react-native';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface FarmerDashboardScreenProps {
-    onNavigateHome: () => void;
+    onNavigateHome?: () => void;
+    onNavigateToProduct?: () => void;
+    onNavigateToLocation?: () => void;
+    onNavigateToAssistant?: () => void;
+    onNavigateToAbout?: () => void;
+    onNavigateToPineBot?: () => void;
 }
 
 // Mock Data
@@ -44,7 +51,14 @@ const topProducts = [
     { name: 'Anak Pokok', sales: 150, revenue: 4050 },
 ];
 
-const FarmerDashboardScreen = ({ onNavigateHome }: FarmerDashboardScreenProps) => {
+const FarmerDashboardScreen = ({
+    onNavigateHome,
+    onNavigateToProduct,
+    onNavigateToLocation,
+    onNavigateToAssistant,
+    onNavigateToAbout,
+    onNavigateToPineBot
+}: FarmerDashboardScreenProps) => {
     const [period, setPeriod] = useState('Monthly');
 
     const renderChart = () => {
@@ -83,7 +97,7 @@ const FarmerDashboardScreen = ({ onNavigateHome }: FarmerDashboardScreenProps) =
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={onNavigateHome} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
+                    <ChevronLeft size={32} color="#FFFFFF" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Farmer Dashboard</Text>
                 <TouchableOpacity>
@@ -196,6 +210,17 @@ const FarmerDashboardScreen = ({ onNavigateHome }: FarmerDashboardScreenProps) =
 
                 <View style={{ height: 30 }} />
             </ScrollView>
+
+            {/* Bottom Navigation */}
+            <BottomNavBar
+                currentScreen="home" // Ideally should be 'dashboard'
+                onNavigateHome={onNavigateHome || (() => { })}
+                onNavigateToProduct={onNavigateToProduct || (() => { })}
+                onNavigateToLocation={onNavigateToLocation || (() => { })}
+                onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+                onNavigateToAbout={onNavigateToAbout || (() => { })}
+                onNavigateToPineBot={onNavigateToPineBot || (() => { })}
+            />
         </SafeAreaView>
     );
 };

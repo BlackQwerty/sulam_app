@@ -2,34 +2,30 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Headset, Home } from 'lucide-react-native';
+import { ChevronLeft, Headset } from 'lucide-react-native';
 import Button from '../components/Button';
-import ProfileSidebar from '../components/ProfileSidebar';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface NewSaleScreenProps {
   onNavigateHome?: () => void;
+  onNavigateToProduct?: () => void;
+  onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
+  onNavigateToPineBot?: () => void;
   onLogout?: () => void;
 }
 
-export default function NewSaleScreen({ onNavigateHome, onNavigateToAssistant, onLogout }: NewSaleScreenProps) {
+export default function NewSaleScreen({
+  onNavigateHome,
+  onNavigateToProduct,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onNavigateToPineBot,
+  onLogout
+}: NewSaleScreenProps) {
   const [pincode, setPincode] = useState('');
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-
-  const handleProfilePress = () => {
-    setIsSidebarVisible(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setIsSidebarVisible(false);
-  };
-
-  const handleLogout = () => {
-    setIsSidebarVisible(false);
-    if (onLogout) {
-      onLogout();
-    }
-  };
 
   const handleCustomerServicePress = () => {
     console.log('Customer service pressed');
@@ -50,22 +46,13 @@ export default function NewSaleScreen({ onNavigateHome, onNavigateToAssistant, o
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <ProfileSidebar
-        isVisible={isSidebarVisible}
-        onClose={handleCloseSidebar}
-        onLogout={handleLogout}
-      />
-
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handleProfilePress}
+          style={styles.backButton}
+          onPress={onNavigateHome}
         >
-          <View style={styles.profileIconContainer}>
-            <UserCircle size={32} color="#fff" />
-          </View>
-          <Text style={styles.profileText}>Farmer</Text>
+          <ChevronLeft size={32} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>New Sale</Text>
@@ -138,14 +125,15 @@ export default function NewSaleScreen({ onNavigateHome, onNavigateToAssistant, o
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.bottomNavButton}
-          onPress={onNavigateHome}
-        >
-          <Home size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="product"
+        onNavigateHome={onNavigateHome || (() => { })}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+        onNavigateToPineBot={onNavigateToPineBot || (() => { })}
+      />
     </SafeAreaView>
   );
 }
@@ -163,16 +151,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#065b66',
   },
-  profileButton: {
-    alignItems: 'center',
-  },
-  profileIconContainer: {
-    marginBottom: 4,
-  },
-  profileText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
+  backButton: {
+    padding: 5,
   },
   headerTitle: {
     fontSize: 22,
@@ -276,15 +256,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     textTransform: 'uppercase',
-  },
-  bottomNav: {
-    backgroundColor: '#065b66',
-    paddingVertical: 15,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  bottomNavButton: {
-    padding: 5,
   },
 });

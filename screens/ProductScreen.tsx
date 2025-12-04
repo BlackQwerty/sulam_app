@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Headset, Home } from 'lucide-react-native';
+import { ChevronLeft, Headset } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
-import ProfileSidebar from '../components/ProfileSidebar';
 import BottomNavBar from '../components/BottomNavBar';
 
 interface ProductScreenProps {
@@ -13,6 +12,7 @@ interface ProductScreenProps {
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
   onNavigateToAbout?: () => void;
+  onNavigateToPineBot?: () => void;
   onLogout?: () => void;
 }
 
@@ -22,24 +22,9 @@ export default function ProductScreen({
   onNavigateToLocation,
   onNavigateToAssistant,
   onNavigateToAbout,
+  onNavigateToPineBot,
   onLogout
 }: ProductScreenProps) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-
-  const handleProfilePress = () => {
-    setIsSidebarVisible(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setIsSidebarVisible(false);
-  };
-
-  const handleLogout = () => {
-    setIsSidebarVisible(false);
-    if (onLogout) {
-      onLogout();
-    }
-  };
 
   const handleCustomerServicePress = () => {
     console.log('Customer service pressed');
@@ -59,7 +44,7 @@ export default function ProductScreen({
   const products = [
     {
       id: '1',
-      name: 'Nanas Dewasa',
+      name: 'Nenas Dewasa',
       stock: 'Stock : 87 pack',
       price: 'RM 200',
       imageUrl: 'https://images.unsplash.com/photo-1618871737423-0c122edb760e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwzfHxGcmVzaCUyMHBpbmVhcHBsZXMlMjBncm91cGVkJTIwdG9nZXRoZXIlMjBpbiUyMGElMjBmYXJtJTIwb3IlMjBtYXJrZXQlMjBzZXR0aW5nfGVufDB8MHx8eWVsbG93fDE3NjQ3NzM0ODR8MA&ixlib=rb-4.1.0&q=85',
@@ -92,22 +77,13 @@ export default function ProductScreen({
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <ProfileSidebar
-        isVisible={isSidebarVisible}
-        onClose={handleCloseSidebar}
-        onLogout={handleLogout}
-      />
-
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handleProfilePress}
+          style={styles.backButton}
+          onPress={onNavigateHome}
         >
-          <View style={styles.profileIconContainer}>
-            <UserCircle size={32} color="#fff" />
-          </View>
-          <Text style={styles.profileText}>Farmer</Text>
+          <ChevronLeft size={32} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Product</Text>
@@ -149,6 +125,7 @@ export default function ProductScreen({
         onNavigateToLocation={onNavigateToLocation || (() => { })}
         onNavigateToAssistant={onNavigateToAssistant || (() => { })}
         onNavigateToAbout={onNavigateToAbout || (() => { })}
+        onNavigateToPineBot={onNavigateToPineBot || (() => { })}
       />
     </SafeAreaView>
   );
@@ -167,16 +144,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#065b66',
   },
-  profileButton: {
-    alignItems: 'center',
-  },
-  profileIconContainer: {
-    marginBottom: 4,
-  },
-  profileText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
+  backButton: {
+    padding: 5,
   },
   headerTitle: {
     fontSize: 22,

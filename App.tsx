@@ -62,6 +62,7 @@ export default function App() {
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -71,7 +72,11 @@ export default function App() {
     return (
       <NewSaleScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -85,6 +90,7 @@ export default function App() {
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -98,6 +104,7 @@ export default function App() {
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -111,6 +118,7 @@ export default function App() {
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -120,6 +128,11 @@ export default function App() {
     return (
       <PineBotScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
       />
     );
   }
@@ -128,6 +141,11 @@ export default function App() {
     return (
       <OrderTrackingScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
       />
     );
   }
@@ -136,6 +154,11 @@ export default function App() {
     return (
       <FarmerDashboardScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
       />
     );
   }
@@ -144,6 +167,11 @@ export default function App() {
     return (
       <WeatherAdvisoryScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
       />
     );
   }
@@ -152,6 +180,11 @@ export default function App() {
     return (
       <PaymentManagementScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
       />
     );
   }

@@ -4,12 +4,13 @@ import { Home, MapPin, Info, Bot } from 'lucide-react-native';
 import PineappleIcon from '../assets/kk.svg';
 
 interface BottomNavBarProps {
-  currentScreen: 'home' | 'product' | 'location' | 'assistant' | 'about';
+  currentScreen: 'home' | 'product' | 'location' | 'assistant' | 'about' | 'pinebot';
   onNavigateHome: () => void;
   onNavigateToProduct: () => void;
   onNavigateToLocation: () => void;
   onNavigateToAssistant: () => void;
   onNavigateToAbout: () => void;
+  onNavigateToPineBot: () => void;
 }
 
 export default function BottomNavBar({
@@ -19,6 +20,7 @@ export default function BottomNavBar({
   onNavigateToLocation,
   onNavigateToAssistant,
   onNavigateToAbout,
+  onNavigateToPineBot,
 }: BottomNavBarProps) {
   const activeColor = '#F6B824';
   const inactiveColor = '#fff';
@@ -39,9 +41,8 @@ export default function BottomNavBar({
         <Home size={28} color={currentScreen === 'home' ? activeColor : inactiveColor} />
       </TouchableOpacity>
 
-      {/* Pine-Bot navigation disabled until AI chat page is created */}
-      <TouchableOpacity onPress={() => { }} style={styles.navItem}>
-        <Bot size={28} color={inactiveColor} />
+      <TouchableOpacity onPress={onNavigateToPineBot} style={styles.navItem}>
+        <Bot size={28} color={currentScreen === 'pinebot' ? activeColor : inactiveColor} />
       </TouchableOpacity>
 
       <TouchableOpacity onPress={onNavigateToAbout} style={styles.navItem}>

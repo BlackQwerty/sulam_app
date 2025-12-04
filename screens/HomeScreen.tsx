@@ -198,6 +198,7 @@ export default function HomeScreen({
         onNavigateToLocation={onNavigateToLocation || (() => { })}
         onNavigateToAssistant={onNavigateToAssistant || (() => { })}
         onNavigateToAbout={onNavigateToAbout || (() => { })}
+        onNavigateToPineBot={onNavigateToPineBot || (() => { })}
       />
     </SafeAreaView>
   );

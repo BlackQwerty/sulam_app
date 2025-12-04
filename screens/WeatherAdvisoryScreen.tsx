@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -6,169 +6,309 @@ import {
     SafeAreaView,
     ScrollView,
     TouchableOpacity,
-    Image,
+    Modal,
+    TextInput,
+    ActivityIndicator,
+    Alert,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ChevronLeft } from 'lucide-react-native';
+import BottomNavBar from '../components/BottomNavBar';
+import { getWeatherForLocation, WeatherData, Location } from '../services/WeatherService';
 
 interface WeatherAdvisoryScreenProps {
-    onNavigateHome: () => void;
+    onNavigateHome?: () => void;
+    onNavigateToProduct?: () => void;
+    onNavigateToLocation?: () => void;
+    onNavigateToAssistant?: () => void;
+    onNavigateToAbout?: () => void;
+    onNavigateToPineBot?: () => void;
 }
 
-// Mock Data
-const currentWeather = {
-    temp: 32,
-    condition: 'Partly Cloudy',
-    humidity: '75%',
-    wind: '12 km/h',
-    rainfall: '0 mm',
-    location: 'Alor Gajah Farm',
-};
+const WeatherAdvisoryScreen = ({
+    onNavigateHome,
+    onNavigateToProduct,
+    onNavigateToLocation,
+    onNavigateToAssistant,
+    onNavigateToAbout,
+    onNavigateToPineBot
+}: WeatherAdvisoryScreenProps) => {
+    const [locations, setLocations] = useState<Location[]>([
+        { id: '1', name: 'Alor Gajah Farm', latitude: 2.3833, longitude: 102.2167 },
+        { id: '2', name: 'Sekinchan Farm', latitude: 3.5000, longitude: 101.1000 },
+    ]);
+    const [selectedLocation, setSelectedLocation] = useState<Location>(locations[0]);
+    const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [newLocationName, setNewLocationName] = useState('');
+    const [newLocationLat, setNewLocationLat] = useState('');
+    const [newLocationLon, setNewLocationLon] = useState('');
+    const [editingLocationId, setEditingLocationId] = useState<string | null>(null);
 
-const forecast = [
-    { day: 'Today', temp: 32, icon: 'weather-partly-cloudy' },
-    { day: 'Tue', temp: 31, icon: 'weather-rainy' },
-    { day: 'Wed', temp: 33, icon: 'weather-sunny' },
-    { day: 'Thu', temp: 30, icon: 'weather-cloudy' },
-    { day: 'Fri', temp: 29, icon: 'weather-pouring' },
-    { day: 'Sat', temp: 31, icon: 'weather-partly-cloudy' },
-    { day: 'Sun', temp: 32, icon: 'weather-sunny' },
-];
+    useEffect(() => {
+        fetchWeather();
+    }, [selectedLocation]);
 
-const advisories = [
-    {
-        type: 'Planting',
-        title: 'Good for Planting',
-        description: 'Soil moisture is optimal. Good time to plant new slips.',
-        icon: 'sprout',
-        color: '#2E7D32',
-        bgColor: '#E8F5E9',
-    },
-    {
-        type: 'Irrigation',
-        title: 'Watering Needed',
-        description: 'No rain expected today. Ensure irrigation systems are active.',
-        icon: 'water',
-        color: '#1565C0',
-        bgColor: '#E3F2FD',
-    },
-    {
-        type: 'Pest Alert',
-        title: 'High Humidity',
-        description: 'Watch out for fungal infections due to high humidity levels.',
-        icon: 'bug',
-        color: '#C62828',
-        bgColor: '#FFEBEE',
-    },
-];
+    const fetchWeather = async () => {
+        setLoading(true);
+        try {
+            const data = await getWeatherForLocation(selectedLocation.latitude, selectedLocation.longitude);
+            setWeatherData(data);
+        } catch (error) {
+            console.error('Error fetching weather:', error);
+            Alert.alert('Error', 'Failed to fetch weather data');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-const alerts = [
-    {
-        severity: 'Warning',
-        title: 'Heavy Rain Expected',
-        time: 'Tuesday, 2:00 PM',
-        description: 'Prepare drainage systems for heavy rainfall tomorrow afternoon.',
-    },
-];
+    const handleAddLocation = () => {
+        if (!newLocationName || !newLocationLat || !newLocationLon) {
+            Alert.alert('Error', 'Please fill in all fields');
+            return;
+        }
 
-const WeatherAdvisoryScreen = ({ onNavigateHome }: WeatherAdvisoryScreenProps) => {
+        const lat = parseFloat(newLocationLat);
+        const lon = parseFloat(newLocationLon);
+
+        if (isNaN(lat) || isNaN(lon)) {
+            Alert.alert('Error', 'Latitude and Longitude must be valid numbers');
+            return;
+        }
+
+        if (editingLocationId) {
+            // Edit existing location
+            setLocations(prev => prev.map(loc =>
+                loc.id === editingLocationId
+                    ? { ...loc, name: newLocationName, latitude: lat, longitude: lon }
+                    : loc
+            ));
+            // If currently selected location was edited, update it
+            if (selectedLocation.id === editingLocationId) {
+                setSelectedLocation({ id: editingLocationId, name: newLocationName, latitude: lat, longitude: lon });
+            }
+        } else {
+            // Add new location
+            const newLocation: Location = {
+                id: Date.now().toString(),
+                name: newLocationName,
+                latitude: lat,
+                longitude: lon,
+            };
+            setLocations(prev => [...prev, newLocation]);
+            setSelectedLocation(newLocation);
+        }
+
+        closeModal();
+    };
+
+    const handleEditLocation = (location: Location) => {
+        setNewLocationName(location.name);
+        setNewLocationLat(location.latitude.toString());
+        setNewLocationLon(location.longitude.toString());
+        setEditingLocationId(location.id);
+        setModalVisible(true);
+    };
+
+    const handleDeleteLocation = (id: string) => {
+        if (locations.length <= 1) {
+            Alert.alert('Error', 'You must have at least one location');
+            return;
+        }
+
+        Alert.alert(
+            'Delete Location',
+            'Are you sure you want to delete this location?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => {
+                        const newLocations = locations.filter(loc => loc.id !== id);
+                        setLocations(newLocations);
+                        if (selectedLocation.id === id) {
+                            setSelectedLocation(newLocations[0]);
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const openAddModal = () => {
+        setNewLocationName('');
+        setNewLocationLat('');
+        setNewLocationLon('');
+        setEditingLocationId(null);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setNewLocationName('');
+        setNewLocationLat('');
+        setNewLocationLon('');
+        setEditingLocationId(null);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={onNavigateHome} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
+                    <ChevronLeft size={32} color="#FFFFFF" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Weather Advisory</Text>
-                <TouchableOpacity>
-                    <Ionicons name="share-social-outline" size={24} color="#FFFFFF" />
+                <TouchableOpacity onPress={openAddModal}>
+                    <Ionicons name="add-circle-outline" size={28} color="#FFFFFF" />
                 </TouchableOpacity>
             </View>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Location Selector */}
-                <TouchableOpacity style={styles.locationSelector}>
-                    <Ionicons name="location" size={20} color="#04383f" />
-                    <Text style={styles.locationText}>{currentWeather.location}</Text>
-                    <Ionicons name="chevron-down" size={20} color="#666" />
-                </TouchableOpacity>
-
-                {/* Current Weather Card */}
-                <View style={styles.weatherCard}>
-                    <View style={styles.weatherMain}>
-                        <View>
-                            <Text style={styles.tempText}>{currentWeather.temp}°C</Text>
-                            <Text style={styles.conditionText}>{currentWeather.condition}</Text>
-                        </View>
-                        <MaterialCommunityIcons name="weather-partly-cloudy" size={80} color="#FFB74D" />
-                    </View>
-                    <View style={styles.weatherDetails}>
-                        <View style={styles.weatherDetailItem}>
-                            <MaterialCommunityIcons name="water-percent" size={20} color="#666" />
-                            <Text style={styles.detailValue}>{currentWeather.humidity}</Text>
-                            <Text style={styles.detailLabel}>Humidity</Text>
-                        </View>
-                        <View style={styles.weatherDetailItem}>
-                            <MaterialCommunityIcons name="weather-windy" size={20} color="#666" />
-                            <Text style={styles.detailValue}>{currentWeather.wind}</Text>
-                            <Text style={styles.detailLabel}>Wind</Text>
-                        </View>
-                        <View style={styles.weatherDetailItem}>
-                            <MaterialCommunityIcons name="weather-rainy" size={20} color="#666" />
-                            <Text style={styles.detailValue}>{currentWeather.rainfall}</Text>
-                            <Text style={styles.detailLabel}>Rainfall</Text>
-                        </View>
-                    </View>
-                </View>
-
-                {/* 7-Day Forecast */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>7-Day Forecast</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.forecastList}>
-                        {forecast.map((day, index) => (
-                            <View key={index} style={styles.forecastItem}>
-                                <Text style={styles.forecastDay}>{day.day}</Text>
-                                <MaterialCommunityIcons name={day.icon as any} size={28} color="#555" />
-                                <Text style={styles.forecastTemp}>{day.temp}°</Text>
-                            </View>
+                <View style={styles.locationContainer}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.locationScroll}>
+                        {locations.map(loc => (
+                            <TouchableOpacity
+                                key={loc.id}
+                                style={[
+                                    styles.locationChip,
+                                    selectedLocation.id === loc.id && styles.selectedLocationChip
+                                ]}
+                                onPress={() => setSelectedLocation(loc)}
+                                onLongPress={() => handleEditLocation(loc)}
+                            >
+                                <Text style={[
+                                    styles.locationChipText,
+                                    selectedLocation.id === loc.id && styles.selectedLocationChipText
+                                ]}>{loc.name}</Text>
+                                {selectedLocation.id === loc.id && (
+                                    <TouchableOpacity onPress={() => handleDeleteLocation(loc.id)} style={styles.deleteIcon}>
+                                        <Ionicons name="close-circle" size={16} color="#FFF" />
+                                    </TouchableOpacity>
+                                )}
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                 </View>
 
-                {/* Farming Recommendations */}
-                <View style={styles.sectionContainer}>
-                    <Text style={styles.sectionTitle}>Farming Recommendations</Text>
-                    {advisories.map((advisory, index) => (
-                        <View key={index} style={[styles.advisoryCard, { backgroundColor: advisory.bgColor }]}>
-                            <View style={[styles.advisoryIcon, { backgroundColor: '#FFF' }]}>
-                                <MaterialCommunityIcons name={advisory.icon as any} size={24} color={advisory.color} />
-                            </View>
-                            <View style={styles.advisoryContent}>
-                                <Text style={[styles.advisoryTitle, { color: advisory.color }]}>{advisory.title}</Text>
-                                <Text style={styles.advisoryDesc}>{advisory.description}</Text>
-                            </View>
-                        </View>
-                    ))}
-                </View>
-
-                {/* Weather Alerts */}
-                {alerts.length > 0 && (
-                    <View style={styles.alertContainer}>
-                        <View style={styles.alertHeader}>
-                            <Ionicons name="warning" size={24} color="#C62828" />
-                            <Text style={styles.alertTitle}>Weather Alert</Text>
-                        </View>
-                        {alerts.map((alert, index) => (
-                            <View key={index} style={styles.alertItem}>
-                                <Text style={styles.alertName}>{alert.title}</Text>
-                                <Text style={styles.alertTime}>{alert.time}</Text>
-                                <Text style={styles.alertDesc}>{alert.description}</Text>
-                            </View>
-                        ))}
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#04383f" />
+                        <Text style={styles.loadingText}>Fetching weather data...</Text>
                     </View>
+                ) : weatherData ? (
+                    <>
+                        {/* Current Weather Card */}
+                        <View style={styles.weatherCard}>
+                            <View style={styles.weatherMain}>
+                                <View>
+                                    <Text style={styles.tempText}>{weatherData.current.temp}°C</Text>
+                                    <Text style={styles.conditionText}>{weatherData.current.condition}</Text>
+                                </View>
+                                <MaterialCommunityIcons name={weatherData.current.condition.includes('Rain') ? 'weather-rainy' : weatherData.current.condition.includes('Cloud') ? 'weather-partly-cloudy' : 'weather-sunny'} size={80} color="#FFB74D" />
+                            </View>
+                            <View style={styles.weatherDetails}>
+                                <View style={styles.weatherDetailItem}>
+                                    <MaterialCommunityIcons name="water-percent" size={20} color="#666" />
+                                    <Text style={styles.detailValue}>{weatherData.current.humidity}%</Text>
+                                    <Text style={styles.detailLabel}>Humidity</Text>
+                                </View>
+                                <View style={styles.weatherDetailItem}>
+                                    <MaterialCommunityIcons name="weather-windy" size={20} color="#666" />
+                                    <Text style={styles.detailValue}>{weatherData.current.windSpeed} km/h</Text>
+                                    <Text style={styles.detailLabel}>Wind</Text>
+                                </View>
+                                <View style={styles.weatherDetailItem}>
+                                    <MaterialCommunityIcons name="weather-rainy" size={20} color="#666" />
+                                    <Text style={styles.detailValue}>{weatherData.current.rainfall} mm</Text>
+                                    <Text style={styles.detailLabel}>Rainfall</Text>
+                                </View>
+                            </View>
+                        </View>
+
+                        {/* 7-Day Forecast */}
+                        <View style={styles.sectionContainer}>
+                            <Text style={styles.sectionTitle}>7-Day Forecast</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.forecastList}>
+                                {weatherData.forecast.map((day, index) => (
+                                    <View key={index} style={styles.forecastItem}>
+                                        <Text style={styles.forecastDay}>{day.day}</Text>
+                                        <MaterialCommunityIcons name={day.icon as any} size={28} color="#555" />
+                                        <Text style={styles.forecastTemp}>{day.temp}°</Text>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                        </View>
+                    </>
+                ) : (
+                    <Text style={styles.errorText}>No weather data available</Text>
                 )}
 
                 <View style={{ height: 30 }} />
             </ScrollView>
+
+            {/* Add/Edit Location Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>{editingLocationId ? 'Edit Location' : 'Add New Location'}</Text>
+
+                        <Text style={styles.inputLabel}>Location Name</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. My Farm"
+                            value={newLocationName}
+                            onChangeText={setNewLocationName}
+                        />
+
+                        <Text style={styles.inputLabel}>Latitude</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. 2.3833"
+                            value={newLocationLat}
+                            onChangeText={setNewLocationLat}
+                            keyboardType="numeric"
+                        />
+
+                        <Text style={styles.inputLabel}>Longitude</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="e.g. 102.2167"
+                            value={newLocationLon}
+                            onChangeText={setNewLocationLon}
+                            keyboardType="numeric"
+                        />
+
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={closeModal}>
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.modalButton, styles.saveButton]} onPress={handleAddLocation}>
+                                <Text style={styles.saveButtonText}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Bottom Navigation */}
+            <BottomNavBar
+                currentScreen="home" // Ideally should be 'weather' but BottomNavBar might not support it yet. I'll check BottomNavBar props.
+                onNavigateHome={onNavigateHome || (() => { })}
+                onNavigateToProduct={onNavigateToProduct || (() => { })}
+                onNavigateToLocation={onNavigateToLocation || (() => { })}
+                onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+                onNavigateToAbout={onNavigateToAbout || (() => { })}
+                onNavigateToPineBot={onNavigateToPineBot || (() => { })}
+            />
         </SafeAreaView>
     );
 };
@@ -197,21 +337,37 @@ const styles = StyleSheet.create({
     content: {
         padding: 16,
     },
-    locationSelector: {
+    locationContainer: {
+        marginBottom: 16,
+    },
+    locationScroll: {
+        flexDirection: 'row',
+    },
+    locationChip: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#FFF',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 16,
-        elevation: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        marginRight: 8,
+        borderWidth: 1,
+        borderColor: '#DDD',
     },
-    locationText: {
-        flex: 1,
-        marginLeft: 8,
-        fontSize: 16,
-        fontWeight: '500',
+    selectedLocationChip: {
+        backgroundColor: '#04383f',
+        borderColor: '#04383f',
+    },
+    locationChipText: {
+        fontSize: 14,
         color: '#333',
+        fontWeight: '500',
+    },
+    selectedLocationChipText: {
+        color: '#FFF',
+    },
+    deleteIcon: {
+        marginLeft: 8,
     },
     weatherCard: {
         backgroundColor: '#FFF',
@@ -288,67 +444,78 @@ const styles = StyleSheet.create({
         color: '#333',
         marginTop: 8,
     },
-    advisoryCard: {
-        flexDirection: 'row',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
+    loadingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 40,
     },
-    advisoryIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+    loadingText: {
+        marginTop: 10,
+        color: '#666',
+    },
+    errorText: {
+        textAlign: 'center',
+        color: 'red',
+        marginTop: 20,
+    },
+    modalContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
-    advisoryContent: {
-        flex: 1,
+    modalContent: {
+        backgroundColor: '#FFF',
+        borderRadius: 16,
+        padding: 20,
+        width: '80%',
+        elevation: 5,
     },
-    advisoryTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 4,
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+        color: '#04383f',
     },
-    advisoryDesc: {
-        fontSize: 13,
-        color: '#555',
-        lineHeight: 18,
-    },
-    alertContainer: {
-        backgroundColor: '#FFEBEE',
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#FFCDD2',
-    },
-    alertHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    alertTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#C62828',
-        marginLeft: 8,
-    },
-    alertItem: {
-        marginBottom: 8,
-    },
-    alertName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-    },
-    alertTime: {
-        fontSize: 12,
+    inputLabel: {
+        fontSize: 14,
         color: '#666',
         marginBottom: 4,
     },
-    alertDesc: {
-        fontSize: 14,
-        color: '#444',
+    input: {
+        borderWidth: 1,
+        borderColor: '#DDD',
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 16,
+        fontSize: 16,
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+    },
+    modalButton: {
+        flex: 1,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginHorizontal: 5,
+    },
+    cancelButton: {
+        backgroundColor: '#DDD',
+    },
+    saveButton: {
+        backgroundColor: '#04383f',
+    },
+    cancelButtonText: {
+        color: '#333',
+        fontWeight: '600',
+    },
+    saveButtonText: {
+        color: '#FFF',
+        fontWeight: '600',
     },
 });
 

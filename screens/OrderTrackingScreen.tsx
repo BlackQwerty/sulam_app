@@ -10,9 +10,16 @@ import {
     Image,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ChevronLeft } from 'lucide-react-native';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface OrderTrackingScreenProps {
-    onNavigateHome: () => void;
+    onNavigateHome?: () => void;
+    onNavigateToProduct?: () => void;
+    onNavigateToLocation?: () => void;
+    onNavigateToAssistant?: () => void;
+    onNavigateToAbout?: () => void;
+    onNavigateToPineBot?: () => void;
 }
 
 // Mock Data
@@ -37,7 +44,14 @@ const orderHistory = [
     { id: 'ORD-2024-072', date: '2024-10-05', total: 8500, status: 'Cancelled' },
 ];
 
-const OrderTrackingScreen = ({ onNavigateHome }: OrderTrackingScreenProps) => {
+const OrderTrackingScreen = ({
+    onNavigateHome,
+    onNavigateToProduct,
+    onNavigateToLocation,
+    onNavigateToAssistant,
+    onNavigateToAbout,
+    onNavigateToPineBot
+}: OrderTrackingScreenProps) => {
     const [activeTab, setActiveTab] = useState<'current' | 'history'>('current');
 
     const renderTimeline = () => {
@@ -172,7 +186,7 @@ const OrderTrackingScreen = ({ onNavigateHome }: OrderTrackingScreenProps) => {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={onNavigateHome} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
+                    <ChevronLeft size={32} color="#FFFFFF" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>My Orders</Text>
                 <View style={{ width: 28 }} />
@@ -195,6 +209,17 @@ const OrderTrackingScreen = ({ onNavigateHome }: OrderTrackingScreenProps) => {
             </View>
 
             {activeTab === 'current' ? renderCurrentOrder() : renderHistory()}
+
+            {/* Bottom Navigation */}
+            <BottomNavBar
+                currentScreen="home" // Ideally should be 'orders'
+                onNavigateHome={onNavigateHome || (() => { })}
+                onNavigateToProduct={onNavigateToProduct || (() => { })}
+                onNavigateToLocation={onNavigateToLocation || (() => { })}
+                onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+                onNavigateToAbout={onNavigateToAbout || (() => { })}
+                onNavigateToPineBot={onNavigateToPineBot || (() => { })}
+            />
         </SafeAreaView>
     );
 };

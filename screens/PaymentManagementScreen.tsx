@@ -9,9 +9,16 @@ import {
     Image,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { ChevronLeft } from 'lucide-react-native';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface PaymentManagementScreenProps {
-    onNavigateHome: () => void;
+    onNavigateHome?: () => void;
+    onNavigateToProduct?: () => void;
+    onNavigateToLocation?: () => void;
+    onNavigateToAssistant?: () => void;
+    onNavigateToAbout?: () => void;
+    onNavigateToPineBot?: () => void;
 }
 
 // Mock Data
@@ -33,13 +40,20 @@ const invoices = [
     { id: 'INV-2024-085', date: '28 Oct 2024', amount: 2700, status: 'Overdue' },
 ];
 
-const PaymentManagementScreen = ({ onNavigateHome }: PaymentManagementScreenProps) => {
+const PaymentManagementScreen = ({
+    onNavigateHome,
+    onNavigateToProduct,
+    onNavigateToLocation,
+    onNavigateToAssistant,
+    onNavigateToAbout,
+    onNavigateToPineBot
+}: PaymentManagementScreenProps) => {
     return (
         <SafeAreaView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={onNavigateHome} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={28} color="#FFFFFF" />
+                    <ChevronLeft size={32} color="#FFFFFF" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Payment Management</Text>
                 <TouchableOpacity>
@@ -142,6 +156,17 @@ const PaymentManagementScreen = ({ onNavigateHome }: PaymentManagementScreenProp
 
                 <View style={{ height: 30 }} />
             </ScrollView>
+
+            {/* Bottom Navigation */}
+            <BottomNavBar
+                currentScreen="home" // Ideally should be 'payment'
+                onNavigateHome={onNavigateHome || (() => { })}
+                onNavigateToProduct={onNavigateToProduct || (() => { })}
+                onNavigateToLocation={onNavigateToLocation || (() => { })}
+                onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+                onNavigateToAbout={onNavigateToAbout || (() => { })}
+                onNavigateToPineBot={onNavigateToPineBot || (() => { })}
+            />
         </SafeAreaView>
     );
 };

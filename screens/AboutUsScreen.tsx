@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Headset, Facebook, Instagram } from 'lucide-react-native';
-import ProfileSidebar from '../components/ProfileSidebar';
+import { ChevronLeft, Headset, Facebook, Instagram } from 'lucide-react-native';
 import TikTokIcon from '../assets/tiktok.svg';
 import BottomNavBar from '../components/BottomNavBar';
 
@@ -13,6 +12,7 @@ interface AboutUsScreenProps {
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
   onNavigateToAbout?: () => void;
+  onNavigateToPineBot?: () => void;
   onLogout?: () => void;
 }
 
@@ -22,24 +22,9 @@ export default function AboutUsScreen({
   onNavigateToLocation,
   onNavigateToAssistant,
   onNavigateToAbout,
+  onNavigateToPineBot,
   onLogout
 }: AboutUsScreenProps) {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-
-  const handleProfilePress = () => {
-    setIsSidebarVisible(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setIsSidebarVisible(false);
-  };
-
-  const handleLogout = () => {
-    setIsSidebarVisible(false);
-    if (onLogout) {
-      onLogout();
-    }
-  };
 
   const handleCustomerServicePress = () => {
     if (onNavigateToAssistant) {
@@ -56,22 +41,13 @@ export default function AboutUsScreen({
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <ProfileSidebar
-        isVisible={isSidebarVisible}
-        onClose={handleCloseSidebar}
-        onLogout={handleLogout}
-      />
-
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handleProfilePress}
+          style={styles.backButton}
+          onPress={onNavigateHome}
         >
-          <View style={styles.profileIconContainer}>
-            <UserCircle size={32} color="#fff" />
-          </View>
-          <Text style={styles.profileText}>Farmer</Text>
+          <ChevronLeft size={32} color="#fff" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>About Us</Text>
@@ -149,6 +125,7 @@ export default function AboutUsScreen({
         onNavigateToLocation={onNavigateToLocation || (() => { })}
         onNavigateToAssistant={onNavigateToAssistant || (() => { })}
         onNavigateToAbout={onNavigateToAbout || (() => { })}
+        onNavigateToPineBot={onNavigateToPineBot || (() => { })}
       />
     </SafeAreaView>
   );
@@ -167,8 +144,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#065b66',
   },
-  profileButton: {
-    alignItems: 'center',
+  backButton: {
+    padding: 5,
   },
   profileIconContainer: {
     marginBottom: 4,
