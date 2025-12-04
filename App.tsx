@@ -11,10 +11,15 @@ import ProductScreen from './screens/ProductScreen';
 import NewSaleScreen from './screens/NewSaleScreen';
 import FarmLocationScreen from './screens/FarmLocationScreen';
 import CustomerAssistantScreen from './screens/CustomerAssistantScreen';
+import PineBotScreen from './screens/PineBotScreen';
+import OrderTrackingScreen from './screens/OrderTrackingScreen';
+import FarmerDashboardScreen from './screens/FarmerDashboardScreen';
+import WeatherAdvisoryScreen from './screens/WeatherAdvisoryScreen';
+import PaymentManagementScreen from './screens/PaymentManagementScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
 import PineappleIcon from './assets/kk.svg';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -40,6 +45,11 @@ export default function App() {
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
         onLogout={() => setCurrentScreen('welcome')}
+        onNavigateToPineBot={() => setCurrentScreen('pinebot')}
+        onNavigateToOrderTracking={() => setCurrentScreen('ordertracking')}
+        onNavigateToDashboard={() => setCurrentScreen('dashboard')}
+        onNavigateToWeather={() => setCurrentScreen('weather')}
+        onNavigateToPayment={() => setCurrentScreen('payment')}
       />
     );
   }
@@ -106,6 +116,46 @@ export default function App() {
     );
   }
 
+  if (currentScreen === 'pinebot') {
+    return (
+      <PineBotScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'ordertracking') {
+    return (
+      <OrderTrackingScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'dashboard') {
+    return (
+      <FarmerDashboardScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'weather') {
+    return (
+      <WeatherAdvisoryScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'payment') {
+    return (
+      <PaymentManagementScreen
+        onNavigateHome={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
   if (currentScreen === 'signup') {
     return (
       <SignUpScreen
@@ -114,6 +164,7 @@ export default function App() {
         onSignUpSuccess={() => setCurrentScreen('home')}
       />
     );
+
   }
 
   if (currentScreen === 'login') {

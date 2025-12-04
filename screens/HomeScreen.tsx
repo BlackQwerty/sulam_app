@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset } from 'lucide-react-native';
+import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset, Truck, LayoutDashboard, CloudSun, CreditCard } from 'lucide-react-native';
 import BannerCard from '../components/BannerCard';
 import MenuButton from '../components/MenuButton';
 import ProfileSidebar from '../components/ProfileSidebar';
@@ -16,6 +16,11 @@ interface HomeScreenProps {
   onNavigateToAssistant?: () => void;
   onNavigateToAbout?: () => void;
   onLogout?: () => void;
+  onNavigateToPineBot?: () => void;
+  onNavigateToOrderTracking?: () => void;
+  onNavigateToDashboard?: () => void;
+  onNavigateToWeather?: () => void;
+  onNavigateToPayment?: () => void;
 }
 
 export default function HomeScreen({
@@ -24,10 +29,14 @@ export default function HomeScreen({
   onNavigateToLocation,
   onNavigateToAssistant,
   onNavigateToAbout,
-  onLogout
+  onLogout,
+  onNavigateToPineBot,
+  onNavigateToOrderTracking,
+  onNavigateToDashboard,
+  onNavigateToWeather,
+  onNavigateToPayment
 }: HomeScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-
   const handleProfilePress = () => {
     setIsSidebarVisible(true);
   };
@@ -104,6 +113,7 @@ export default function HomeScreen({
         </TouchableOpacity>
       </View>
 
+
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
@@ -147,7 +157,34 @@ export default function HomeScreen({
             <MenuButton
               title="PINE-BOT"
               icon={<Bot size={48} color="#fff" />}
-              onPress={() => handleMenuPress('Pine-Bot')}
+              onPress={() => onNavigateToPineBot?.()}
+            />
+          </View>
+
+          {/* New Features Grid */}
+          <View style={styles.menuRow}>
+            <MenuButton
+              title="ORDERS"
+              icon={<Truck size={48} color="#fff" />}
+              onPress={() => onNavigateToOrderTracking?.()}
+            />
+            <MenuButton
+              title="DASHBOARD"
+              icon={<LayoutDashboard size={48} color="#fff" />}
+              onPress={() => onNavigateToDashboard?.()}
+            />
+          </View>
+
+          <View style={styles.menuRow}>
+            <MenuButton
+              title="WEATHER"
+              icon={<CloudSun size={48} color="#fff" />}
+              onPress={() => onNavigateToWeather?.()}
+            />
+            <MenuButton
+              title="PAYMENT"
+              icon={<CreditCard size={48} color="#fff" />}
+              onPress={() => onNavigateToPayment?.()}
             />
           </View>
         </View>
