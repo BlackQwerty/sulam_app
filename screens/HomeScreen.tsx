@@ -6,7 +6,8 @@ import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset } from 'lucide-react
 import BannerCard from '../components/BannerCard';
 import MenuButton from '../components/MenuButton';
 import ProfileSidebar from '../components/ProfileSidebar';
-import PineappleIcon from '../assets/pineapple.svg';
+import PineappleIcon from '../assets/kk.svg';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface HomeScreenProps {
   onNavigateToProduct?: () => void;
@@ -153,11 +154,14 @@ export default function HomeScreen({
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.bottomNavButton}>
-          <Home size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="home"
+        onNavigateHome={() => { }}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+      />
     </SafeAreaView>
   );
 }

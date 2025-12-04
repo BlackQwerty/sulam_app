@@ -6,7 +6,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import TextInput from '../components/TextInput';
 import Checkbox from '../components/Checkbox';
 import Button from '../components/Button';
-import PineappleIcon from '../assets/pineapple.svg';
+import PineappleIcon from '../assets/kk.svg';
 
 interface SignUpScreenProps {
   onBack: () => void;
@@ -32,7 +32,7 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      
+
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <ChevronLeft size={28} color="#fff" />
@@ -53,7 +53,7 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
             onChangeText={setUsername}
             autoCapitalize="none"
           />
-          
+
           <TextInput
             placeholder="Email"
             value={email}
@@ -62,7 +62,7 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
             autoCapitalize="none"
             style={styles.inputSpacing}
           />
-          
+
           <TextInput
             placeholder="Password"
             value={password}
@@ -70,7 +70,7 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
             secureTextEntry
             style={styles.inputSpacing}
           />
-          
+
           <TextInput
             placeholder="Confirm Password"
             value={confirmPassword}

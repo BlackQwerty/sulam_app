@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Mountain } from 'lucide-react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
 export default function Header() {
   return (
     <View style={styles.header}>
       <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
-          <Mountain size={24} color="#FF8C42" />
-        </View>
+        <Image
+          source={require('../assets/lpnm_logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
       <Text style={styles.headerText}>Lembaga Perindustrian Nanas Malaysia</Text>
     </View>
@@ -17,7 +18,7 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#065b66',
+    //backgroundColor: '#065b66',
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -26,13 +27,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: 8,
   },
-  logoCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  logo: {
+    width: 60,
+    height: 60,
   },
   headerText: {
     color: '#fff',

@@ -2,16 +2,28 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Headset, Home, Facebook, Instagram, Video } from 'lucide-react-native';
+import { UserCircle, Headset, Facebook, Instagram } from 'lucide-react-native';
 import ProfileSidebar from '../components/ProfileSidebar';
+import TikTokIcon from '../assets/tiktok.svg';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface AboutUsScreenProps {
   onNavigateHome?: () => void;
+  onNavigateToProduct?: () => void;
+  onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
   onLogout?: () => void;
 }
 
-export default function AboutUsScreen({ onNavigateHome, onNavigateToAssistant, onLogout }: AboutUsScreenProps) {
+export default function AboutUsScreen({
+  onNavigateHome,
+  onNavigateToProduct,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onLogout
+}: AboutUsScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const handleProfilePress = () => {
@@ -79,7 +91,7 @@ export default function AboutUsScreen({ onNavigateHome, onNavigateToAssistant, o
         {/* Logo and Title */}
         <View style={styles.logoSection}>
           <Image
-            source={{ uri: 'https://seeklogo.com/images/L/lembaga-perindustrian-nanas-malaysia-lpnm-logo-9831778103-seeklogo.com.png' }}
+            source={require('../assets/lpnm_logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -122,7 +134,7 @@ export default function AboutUsScreen({ onNavigateHome, onNavigateToAssistant, o
 
           <TouchableOpacity style={styles.socialRow} onPress={() => handleSocialPress('TikTok')}>
             <View style={[styles.socialIcon, { backgroundColor: '#000000' }]}>
-              <Video size={24} color="#fff" />
+              <TikTokIcon width={24} height={24} />
             </View>
             <Text style={styles.socialText}>@lpnm_nanas</Text>
           </TouchableOpacity>
@@ -130,14 +142,14 @@ export default function AboutUsScreen({ onNavigateHome, onNavigateToAssistant, o
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.bottomNavButton}
-          onPress={onNavigateHome}
-        >
-          <Home size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="about"
+        onNavigateHome={onNavigateHome || (() => { })}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+      />
     </SafeAreaView>
   );
 }
@@ -234,15 +246,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     flex: 1,
-  },
-  bottomNav: {
-    backgroundColor: '#065b66',
-    paddingVertical: 15,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  bottomNavButton: {
-    padding: 5,
   },
 });

@@ -12,7 +12,7 @@ import NewSaleScreen from './screens/NewSaleScreen';
 import FarmLocationScreen from './screens/FarmLocationScreen';
 import CustomerAssistantScreen from './screens/CustomerAssistantScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
-import PineappleIcon from './assets/pineapple.svg';
+import PineappleIcon from './assets/kk.svg';
 
 type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about';
 
@@ -48,7 +48,10 @@ export default function App() {
     return (
       <ProductScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -68,7 +71,10 @@ export default function App() {
     return (
       <FarmLocationScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -78,6 +84,10 @@ export default function App() {
     return (
       <CustomerAssistantScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
+        onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -87,7 +97,10 @@ export default function App() {
     return (
       <AboutUsScreen
         onNavigateHome={() => setCurrentScreen('home')}
+        onNavigateToProduct={() => setCurrentScreen('product')}
+        onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
+        onNavigateToAbout={() => setCurrentScreen('about')}
         onLogout={() => setCurrentScreen('welcome')}
       />
     );
@@ -120,7 +133,7 @@ export default function App() {
 
       <View style={styles.content}>
         <View style={styles.pineappleContainer}>
-          <PineappleIcon width={180} height={240} />
+          <PineappleIcon width={220} height={280} />
         </View>
 
         <Text style={styles.welcomeText}>WELCOME</Text>
@@ -152,14 +165,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   pineappleContainer: {
-    marginBottom: 30,
+    marginBottom: 40,
+    marginTop: -40,
   },
   welcomeText: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 20,
     letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   descriptionText: {
     fontSize: 14,
@@ -169,13 +184,13 @@ const styles = StyleSheet.create({
     opacity: 0.95,
   },
   footer: {
-    backgroundColor: '#065b66',
-    paddingVertical: 30,
+    paddingVertical: 40,
     paddingHorizontal: 20,
+    width: '100%',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
     gap: 20,
   },

@@ -5,14 +5,25 @@ import { StatusBar } from 'expo-status-bar';
 import { UserCircle, Headset, Home } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import ProfileSidebar from '../components/ProfileSidebar';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface ProductScreenProps {
   onNavigateHome?: () => void;
+  onNavigateToProduct?: () => void;
+  onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
   onLogout?: () => void;
 }
 
-export default function ProductScreen({ onNavigateHome, onNavigateToAssistant, onLogout }: ProductScreenProps) {
+export default function ProductScreen({
+  onNavigateHome,
+  onNavigateToProduct,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onLogout
+}: ProductScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const handleProfilePress = () => {
@@ -131,14 +142,14 @@ export default function ProductScreen({ onNavigateHome, onNavigateToAssistant, o
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.bottomNavButton}
-          onPress={onNavigateHome}
-        >
-          <Home size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="product"
+        onNavigateHome={onNavigateHome || (() => { })}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+      />
     </SafeAreaView>
   );
 }

@@ -4,10 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { UserCircle, Headset, Home } from 'lucide-react-native';
 import ProfileSidebar from '../components/ProfileSidebar';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface FarmLocationScreenProps {
   onNavigateHome?: () => void;
+  onNavigateToProduct?: () => void;
+  onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
   onLogout?: () => void;
 }
 
@@ -70,7 +74,14 @@ function ProfileCard({ name, location, imageUrl, onPress }: ProfileCardProps) {
   );
 }
 
-export default function FarmLocationScreen({ onNavigateHome, onNavigateToAssistant, onLogout }: FarmLocationScreenProps) {
+export default function FarmLocationScreen({
+  onNavigateHome,
+  onNavigateToProduct,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onLogout
+}: FarmLocationScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const handleProfilePress = () => {
@@ -166,21 +177,21 @@ export default function FarmLocationScreen({ onNavigateHome, onNavigateToAssista
           <ProfileCard
             name="Cik Mat"
             location="Sungai Besi"
-            imageUrl="https://images.unsplash.com/photo-1652520342059-7ac46093345e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxMHx8UHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXQlMjBpbiUyMG91dGRvb3IlMjBmYXJtJTIwc2V0dGluZ3xlbnwwfDF8fHwxNzY0Nzc5OTU0fDA&ixlib=rb-4.1.0&q=85"
+            imageUrl="https://images.unsplash.com/photo-1652520342059-7ac46093345e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxMHx8UHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXQlMjBpbiUyMG91dGRvb3JzJTIwZmFybSUyMHNldHRpbmd8ZW58MHwxfHwxfDE3NjQ3Nzk5NTQ%3D&ixlib=rb-4.1.0&q=85"
             onPress={() => handleProfileCardPress('Cik Mat')}
           />
         </View>
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.bottomNavButton}
-          onPress={onNavigateHome}
-        >
-          <Home size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="location"
+        onNavigateHome={onNavigateHome || (() => { })}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+      />
     </SafeAreaView>
   );
 }

@@ -6,7 +6,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import TextInput from '../components/TextInput';
 import Checkbox from '../components/Checkbox';
 import Button from '../components/Button';
-import PineappleIcon from '../assets/pineapple.svg';
+import PineappleIcon from '../assets/kk.svg';
 
 interface LogInScreenProps {
   onBack: () => void;
@@ -29,7 +29,7 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      
+
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <ChevronLeft size={28} color="#fff" />
@@ -50,7 +50,7 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
             onChangeText={setUsername}
             autoCapitalize="none"
           />
-          
+
           <TextInput
             placeholder="Password"
             value={password}

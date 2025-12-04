@@ -2,15 +2,27 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Headset, Phone, Mail, Home } from 'lucide-react-native';
+import { UserCircle, Headset, Phone, Mail } from 'lucide-react-native';
 import ProfileSidebar from '../components/ProfileSidebar';
+import BottomNavBar from '../components/BottomNavBar';
 
 interface CustomerAssistantScreenProps {
   onNavigateHome?: () => void;
+  onNavigateToProduct?: () => void;
+  onNavigateToLocation?: () => void;
+  onNavigateToAssistant?: () => void;
+  onNavigateToAbout?: () => void;
   onLogout?: () => void;
 }
 
-export default function CustomerAssistantScreen({ onNavigateHome, onLogout }: CustomerAssistantScreenProps) {
+export default function CustomerAssistantScreen({
+  onNavigateHome,
+  onNavigateToProduct,
+  onNavigateToLocation,
+  onNavigateToAssistant,
+  onNavigateToAbout,
+  onLogout
+}: CustomerAssistantScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const handleProfilePress = () => {
@@ -118,14 +130,14 @@ export default function CustomerAssistantScreen({ onNavigateHome, onLogout }: Cu
       </View>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.bottomNavButton}
-          onPress={onNavigateHome}
-        >
-          <Home size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <BottomNavBar
+        currentScreen="assistant"
+        onNavigateHome={onNavigateHome || (() => { })}
+        onNavigateToProduct={onNavigateToProduct || (() => { })}
+        onNavigateToLocation={onNavigateToLocation || (() => { })}
+        onNavigateToAssistant={onNavigateToAssistant || (() => { })}
+        onNavigateToAbout={onNavigateToAbout || (() => { })}
+      />
     </SafeAreaView>
   );
 }
@@ -200,15 +212,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     flex: 1,
-  },
-  bottomNav: {
-    backgroundColor: '#065b66',
-    paddingVertical: 15,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  bottomNavButton: {
-    padding: 5,
   },
 });
