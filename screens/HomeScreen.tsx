@@ -21,6 +21,7 @@ interface HomeScreenProps {
   onNavigateToDashboard?: () => void;
   onNavigateToWeather?: () => void;
   onNavigateToPayment?: () => void;
+  onNavigateToPrice?: () => void;
 }
 
 export default function HomeScreen({
@@ -34,7 +35,8 @@ export default function HomeScreen({
   onNavigateToOrderTracking,
   onNavigateToDashboard,
   onNavigateToWeather,
-  onNavigateToPayment
+  onNavigateToPayment,
+  onNavigateToPrice
 }: HomeScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const handleProfilePress = () => {
@@ -67,6 +69,8 @@ export default function HomeScreen({
     console.log(`${banner} banner pressed`);
     if (banner === 'New Sale' && onNavigateToNewSale) {
       onNavigateToNewSale();
+    } else if (banner === 'Today Price' && onNavigateToPrice) {
+      onNavigateToPrice();
     }
   };
 

@@ -18,8 +18,12 @@ export default function TextInput({ placeholder, style, isPassword = false, secu
         placeholder={placeholder}
         placeholderTextColor="#999"
         secureTextEntry={isSecure && !showPassword}
-        autoComplete={isSecure ? 'password' : undefined}
-        textContentType={isSecure ? 'password' : undefined}
+        autoComplete="off"
+        autoCorrect={false}
+        spellCheck={false}
+        textContentType={isSecure ? "oneTimeCode" : "none"}
+        importantForAutofill="no"
+        keyboardType={isSecure ? "default" : props.keyboardType}
         {...props}
       />
       {isSecure && (

@@ -32,9 +32,33 @@ export default function AboutUsScreen({
     }
   };
 
-  const handleSocialPress = (platform: string) => {
-    console.log(`Open ${platform}`);
-    // Implement actual linking if needed
+  const handleSocialPress = async (platform: string) => {
+    let url = '';
+
+    switch (platform) {
+      case 'Facebook':
+        url = 'https://www.facebook.com/lpnm.gov';
+        break;
+      case 'Instagram':
+        url = 'https://www.instagram.com/nanas_lpnm/';
+        break;
+      case 'TikTok':
+        url = 'https://www.tiktok.com/@lpnm_nanas';
+        break;
+      default:
+        return;
+    }
+
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.log(`Cannot open URL: ${url}`);
+      }
+    } catch (error) {
+      console.error('Error opening URL:', error);
+    }
   };
 
   return (

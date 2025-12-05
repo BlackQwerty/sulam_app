@@ -17,9 +17,10 @@ import FarmerDashboardScreen from './screens/FarmerDashboardScreen';
 import WeatherAdvisoryScreen from './screens/WeatherAdvisoryScreen';
 import PaymentManagementScreen from './screens/PaymentManagementScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
+import PineapplePriceScreen from './screens/PineapplePriceScreen';
 import PineappleIcon from './assets/kk.svg';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment' | 'price';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -50,6 +51,7 @@ export default function App() {
         onNavigateToDashboard={() => setCurrentScreen('dashboard')}
         onNavigateToWeather={() => setCurrentScreen('weather')}
         onNavigateToPayment={() => setCurrentScreen('payment')}
+        onNavigateToPrice={() => setCurrentScreen('price')}
       />
     );
   }
@@ -185,6 +187,14 @@ export default function App() {
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
         onNavigateToPineBot={() => setCurrentScreen('pinebot')}
+      />
+    );
+  }
+
+  if (currentScreen === 'price') {
+    return (
+      <PineapplePriceScreen
+        onBack={() => setCurrentScreen('home')}
       />
     );
   }
