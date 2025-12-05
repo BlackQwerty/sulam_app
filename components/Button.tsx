@@ -5,14 +5,20 @@ interface ButtonProps {
   title: string;
   onPress: () => void;
   variant?: 'filled' | 'outlined';
+  disabled?: boolean;
 }
 
-export default function Button({ title, onPress, variant = 'filled' }: ButtonProps) {
+export default function Button({ title, onPress, variant = 'filled', disabled = false }: ButtonProps) {
   return (
     <TouchableOpacity
-      style={[styles.button, variant === 'filled' ? styles.filledButton : styles.outlinedButton]}
+      style={[
+        styles.button,
+        variant === 'filled' ? styles.filledButton : styles.outlinedButton,
+        disabled && styles.disabledButton
+      ]}
       onPress={onPress}
       activeOpacity={0.8}
+      disabled={disabled}
     >
       <Text style={[styles.buttonText, variant === 'outlined' && styles.outlinedButtonText]}>
         {title}
@@ -37,6 +43,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#fff',
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',

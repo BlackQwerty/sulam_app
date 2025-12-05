@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/firebaseConfig';
 import TextInput from '../components/TextInput';
 import Checkbox from '../components/Checkbox';
 import Button from '../components/Button';
@@ -14,15 +16,50 @@ interface LogInScreenProps {
 }
 
 export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogIn = () => {
-    console.log('Log In:', { username, password, rememberPassword });
-    // Navigate to home screen after successful login
-    if (onLoginSuccess) {
-      onLoginSuccess();
+  const handleLogIn = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      console.log('User logged in successfully:', userCredential.user.email);
+      Alert.alert('Success', 'Logged in successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            if (onLoginSuccess) {
+              onLoginSuccess();
+            }
+          }
+        }
+      ]);
+    } catch (error: any) {
+      console.error('Login error:', error);
+      let errorMessage = 'Failed to log in. Please try again.';
+
+      if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address format.';
+      } else if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with this email.';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password.';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = 'Invalid email or password.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many failed attempts. Please try again later.';
+      }
+
+      Alert.alert('Login Failed', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,9 +82,10 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
 
         <View style={styles.formContainer}>
           <TextInput
-            placeholder="Username"
-            value={username}
-            onChangeText={setUsername}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
             autoCapitalize="none"
           />
 
@@ -55,7 +93,8 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            isPassword
+            autoCapitalize="none"
             style={styles.inputSpacing}
           />
 
@@ -66,7 +105,19 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
           />
 
           <View style={styles.buttonContainer}>
-            <Button title="LOG IN" onPress={handleLogIn} variant="filled" />
+            <Button
+              title={loading ? "LOGGING IN..." : "LOG IN"}
+              onPress={handleLogIn}
+              variant="filled"
+              disabled={loading}
+            />
+            {loading && (
+              <ActivityIndicator
+                size="small"
+                color="#fff"
+                style={styles.loadingIndicator}
+              />
+            )}
           </View>
         </View>
       </ScrollView>
@@ -118,5 +169,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     marginTop: 20,
+  },
+  loadingIndicator: {
+    position: 'absolute',
+    right: 20,
   },
 });

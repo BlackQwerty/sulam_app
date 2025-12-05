@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../firebase/firebaseConfig';
 import TextInput from '../components/TextInput';
 import Checkbox from '../components/Checkbox';
 import Button from '../components/Button';
@@ -20,12 +22,68 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSignUp = () => {
-    console.log('Sign Up:', { username, email, password, confirmPassword, rememberPassword });
-    // Navigate to home screen after successful signup
-    if (onSignUpSuccess) {
-      onSignUpSuccess();
+  const handleSignUp = async () => {
+    // Validation
+    if (!username.trim()) {
+      Alert.alert('Error', 'Please enter a username');
+      return;
+    }
+
+    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+
+      // Update user profile with username
+      await updateProfile(userCredential.user, {
+        displayName: username.trim()
+      });
+
+      console.log('User signed up successfully:', userCredential.user.email);
+      Alert.alert('Success', 'Account created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            if (onSignUpSuccess) {
+              onSignUpSuccess();
+            }
+          }
+        }
+      ]);
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      let errorMessage = 'Failed to create account. Please try again.';
+
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please log in instead.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address format.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak. Please use a stronger password.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection.';
+      }
+
+      Alert.alert('Sign Up Failed', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,7 +125,8 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            isPassword
+            autoCapitalize="none"
             style={styles.inputSpacing}
           />
 
@@ -75,7 +134,8 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
             placeholder="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            secureTextEntry
+            isPassword
+            autoCapitalize="none"
             style={styles.inputSpacing}
           />
 
@@ -86,7 +146,19 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
           />
 
           <View style={styles.buttonContainer}>
-            <Button title="SIGN UP" onPress={handleSignUp} variant="filled" />
+            <Button
+              title={loading ? "SIGNING UP..." : "SIGN UP"}
+              onPress={handleSignUp}
+              variant="filled"
+              disabled={loading}
+            />
+            {loading && (
+              <ActivityIndicator
+                size="small"
+                color="#fff"
+                style={styles.loadingIndicator}
+              />
+            )}
           </View>
 
           <TouchableOpacity onPress={onNavigateToLogin} style={styles.loginLink}>
@@ -155,5 +227,9 @@ const styles = StyleSheet.create({
   },
   loginLinkBold: {
     fontWeight: '700',
+  },
+  loadingIndicator: {
+    position: 'absolute',
+    right: 20,
   },
 });
