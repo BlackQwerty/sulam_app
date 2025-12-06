@@ -28,6 +28,13 @@ export default function ProfileSidebar({
 }: ProfileSidebarProps) {
   const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
 
+  // Debug: Log role value whenever it changes
+  useEffect(() => {
+    console.log('📱 [ProfileSidebar] Role prop received:', role);
+    console.log('📱 [ProfileSidebar] Username prop received:', username);
+    console.log('📱 [ProfileSidebar] Capitalized role:', role.charAt(0).toUpperCase() + role.slice(1));
+  }, [role, username]);
+
   useEffect(() => {
     if (isVisible) {
       Animated.timing(slideAnim, {

@@ -61,7 +61,7 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         username: username.trim(),
         email: email.trim(),
-        role: 'user', // Default role
+        role: 'farmer', // Default role for new users
         createdAt: serverTimestamp()
       });
 

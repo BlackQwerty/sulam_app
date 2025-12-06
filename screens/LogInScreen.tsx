@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth, db } from '../firebase/firebaseConfig';
 import TextInput from '../components/TextInput';
@@ -36,6 +36,7 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
 
       // Try to fetch and cache user role
       try {
+        console.log('🔍 [Login] Fetching user role for UID:', userCredential.user.uid);
         const userDocRef = doc(db, 'users', userCredential.user.uid);
         const userDoc = await getDoc(userDocRef);
 
@@ -43,15 +44,30 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
           const userData = userDoc.data();
           const userRole = userData.role || 'user';
 
+          console.log('✅ [Login] User document found:', userData);
+          console.log('✅ [Login] User role:', userRole);
+
           // Cache role in AsyncStorage
           await AsyncStorage.setItem('userRole', userRole);
-          console.log('User role cached:', userRole);
+          console.log('💾 [Login] Role cached in AsyncStorage:', userRole);
         } else {
-          console.log('No user document found, caching default role');
-          await AsyncStorage.setItem('userRole', 'user');
+          console.log('⚠️ [Login] No user document found, creating one...');
+
+          // Create user document if it doesn't exist
+          const newUserRole = email.trim().toLowerCase() === 'maroq@gmail.com' ? 'admin' : 'farmer';
+
+          await setDoc(userDocRef, {
+            username: userCredential.user.displayName || email.split('@')[0],
+            email: email.trim(),
+            role: newUserRole,
+            createdAt: serverTimestamp()
+          });
+
+          console.log('✅ [Login] User document created with role:', newUserRole);
+          await AsyncStorage.setItem('userRole', newUserRole);
         }
       } catch (roleError) {
-        console.error('Error fetching role (will use default):', roleError);
+        console.error('❌ [Login] Error fetching role:', roleError);
         await AsyncStorage.setItem('userRole', 'user');
       }
 

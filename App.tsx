@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth, db } from './firebase/firebaseConfig';
 import Header from './components/Header';
@@ -35,59 +35,87 @@ export default function App() {
 
   // Track authentication state and user profile
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeSnapshot: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUsername(user.displayName || 'User');
         setPhotoURL(user.photoURL || '');
 
-        // Try to get role from AsyncStorage first (cached from login)
+        // 1. Setup Real-time Listener for Firestore
+        // This ensures if the role changes (or is created by LoginScreen), we update immediately.
+        try {
+          console.log('🔍 [App] Setting up real-time listener for UID:', user.uid);
+          const userDocRef = doc(db, 'users', user.uid);
+
+          unsubscribeSnapshot = onSnapshot(userDocRef, async (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              const userData = docSnapshot.data();
+              console.log('🔥 [App] Real-time update received:', userData.role);
+
+              // Update Role
+              const fetchedRole = userData.role || 'user';
+              setRole(fetchedRole);
+
+              // Update Username (Fixes "User" display issue)
+              if (userData.username) {
+                setUsername(userData.username);
+                console.log('👤 [App] Username updated from Firestore:', userData.username);
+              }
+
+              await AsyncStorage.setItem('userRole', fetchedRole);
+            } else {
+              console.log('⚠️ [App] Document missing (waiting for creation...)');
+              // Don't overwrite with 'user' yet, keep loading or cache if possible
+              // But if we truly have nothing, default to user
+              setRole('user');
+            }
+          }, (error) => {
+            // Ignore permission errors as they might happen during initial signup/auth race conditions
+            if (error.code === 'permission-denied') {
+              console.log('⚠️ [App] Waiting for permissions (normal during signup)...');
+            } else {
+              console.error('❌ [App] Snapshot error:', error.message);
+            }
+          });
+
+        } catch (error) {
+          console.error('❌ [App] Error setting up listener:', error);
+        }
+
+        // 2. Check Cache as fallback (immediate display while loading)
         try {
           const cachedRole = await AsyncStorage.getItem('userRole');
           if (cachedRole) {
-            console.log('Using cached role from AsyncStorage:', cachedRole);
-            setRole(cachedRole);
-            return; // Use cached role, skip Firestore
+            // Only set if we haven't received real data yet (optional optimization)
+            // For simplicity, we can just set it. Firestore update will overwrite it anyway.
+            console.log('📦 [App] Loaded cached role:', cachedRole);
+            // Note: We don't forcefully setRole here if we want to rely on the listener,
+            // but setting it provides instant UI feedback.
+            // Let's set it, and the listener will correct it milliseconds later if different.
+            if (role === 'user') setRole(cachedRole);
           }
-        } catch (cacheError) {
-          console.log('Could not read from AsyncStorage:', cacheError);
-        }
+        } catch (e) { /* ignore cache errors */ }
 
-        // If no cached role, try Firestore (will fail if permissions not set)
-        try {
-          console.log('Fetching user data for UID:', user.uid);
-          const userDocRef = doc(db, 'users', user.uid);
-          const userDoc = await getDoc(userDocRef);
-
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            console.log('User document data:', userData);
-            console.log('User role from Firestore:', userData.role);
-            const fetchedRole = userData.role || 'user';
-            setRole(fetchedRole);
-
-            // Cache it for next time
-            await AsyncStorage.setItem('userRole', fetchedRole);
-          } else {
-            console.log('No user document found in Firestore for UID:', user.uid);
-            setRole('user');
-            await AsyncStorage.setItem('userRole', 'user');
-          }
-        } catch (error) {
-          console.error('Error fetching user role from Firestore:', error);
-          console.log('Using default role: user');
-          setRole('user');
-          await AsyncStorage.setItem('userRole', 'user');
-        }
       } else {
+        // User Logged Out
         setUsername('User');
         setPhotoURL('');
         setRole('user');
-        // Clear cached role on logout
         await AsyncStorage.removeItem('userRole');
+
+        // Cleanup snapshot listener if it exists
+        if (unsubscribeSnapshot) {
+          unsubscribeSnapshot();
+          unsubscribeSnapshot = undefined;
+        }
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
+    };
   }, []);
 
   const handleSignIn = () => {
@@ -108,6 +136,7 @@ export default function App() {
   };
 
   if (currentScreen === 'home') {
+    console.log('🎯 [App] Passing to HomeScreen - role:', role, 'username:', username);
     return (
       <HomeScreen
         onNavigateToProduct={() => setCurrentScreen('product')}

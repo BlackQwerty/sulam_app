@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -47,6 +47,14 @@ export default function HomeScreen({
   role = 'user'
 }: HomeScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
+  // Debug: Log role value whenever it changes
+  useEffect(() => {
+    console.log('🏠 [HomeScreen] Role prop received:', role);
+    console.log('🏠 [HomeScreen] Username prop received:', username);
+    console.log('🏠 [HomeScreen] PhotoURL prop received:', photoURL);
+  }, [role, username, photoURL]);
+
   const handleProfilePress = () => {
     setIsSidebarVisible(true);
   };
