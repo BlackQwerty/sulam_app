@@ -22,6 +22,10 @@ interface HomeScreenProps {
   onNavigateToWeather?: () => void;
   onNavigateToPayment?: () => void;
   onNavigateToPrice?: () => void;
+  onNavigateToEditProfile?: () => void;
+  username?: string;
+  photoURL?: string;
+  role?: string;
 }
 
 export default function HomeScreen({
@@ -36,7 +40,11 @@ export default function HomeScreen({
   onNavigateToDashboard,
   onNavigateToWeather,
   onNavigateToPayment,
-  onNavigateToPrice
+  onNavigateToPrice,
+  onNavigateToEditProfile,
+  username = 'User',
+  photoURL = '',
+  role = 'user'
 }: HomeScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const handleProfilePress = () => {
@@ -93,6 +101,11 @@ export default function HomeScreen({
         isVisible={isSidebarVisible}
         onClose={handleCloseSidebar}
         onLogout={handleLogout}
+        onEditProfile={onNavigateToEditProfile}
+        onHelp={onNavigateToAssistant}
+        username={username}
+        photoURL={photoURL}
+        role={role}
       />
 
       {/* Header */}
@@ -104,7 +117,9 @@ export default function HomeScreen({
           <View style={styles.profileIconContainer}>
             <UserCircle size={32} color="#fff" />
           </View>
-          <Text style={styles.profileText}>Farmer</Text>
+          <Text style={styles.profileText}>
+            {role.charAt(0).toUpperCase() + role.slice(1)}
+          </Text>
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Home</Text>

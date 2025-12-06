@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../firebase/firebaseConfig';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '../firebase/firebaseConfig';
 import TextInput from '../components/TextInput';
 import Checkbox from '../components/Checkbox';
 import Button from '../components/Button';
@@ -54,6 +55,14 @@ export default function SignUpScreen({ onBack, onNavigateToLogin, onSignUpSucces
       // Update user profile with username
       await updateProfile(userCredential.user, {
         displayName: username.trim()
+      });
+
+      // Create user document in Firestore
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        username: username.trim(),
+        email: email.trim(),
+        role: 'user', // Default role
+        createdAt: serverTimestamp()
       });
 
       console.log('User signed up successfully:', userCredential.user.email);

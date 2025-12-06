@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth, db } from './firebase/firebaseConfig';
 import Header from './components/Header';
 import Button from './components/Button';
 import SignUpScreen from './screens/SignUpScreen';
 import LogInScreen from './screens/LogInScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
 import NewSaleScreen from './screens/NewSaleScreen';
@@ -20,10 +25,70 @@ import AboutUsScreen from './screens/AboutUsScreen';
 import PineapplePriceScreen from './screens/PineapplePriceScreen';
 import PineappleIcon from './assets/kk.svg';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment' | 'price';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment' | 'price' | 'editprofile';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
+  const [username, setUsername] = useState<string>('User');
+  const [photoURL, setPhotoURL] = useState<string>('');
+  const [role, setRole] = useState<string>('user');
+
+  // Track authentication state and user profile
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUsername(user.displayName || 'User');
+        setPhotoURL(user.photoURL || '');
+
+        // Try to get role from AsyncStorage first (cached from login)
+        try {
+          const cachedRole = await AsyncStorage.getItem('userRole');
+          if (cachedRole) {
+            console.log('Using cached role from AsyncStorage:', cachedRole);
+            setRole(cachedRole);
+            return; // Use cached role, skip Firestore
+          }
+        } catch (cacheError) {
+          console.log('Could not read from AsyncStorage:', cacheError);
+        }
+
+        // If no cached role, try Firestore (will fail if permissions not set)
+        try {
+          console.log('Fetching user data for UID:', user.uid);
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('User document data:', userData);
+            console.log('User role from Firestore:', userData.role);
+            const fetchedRole = userData.role || 'user';
+            setRole(fetchedRole);
+
+            // Cache it for next time
+            await AsyncStorage.setItem('userRole', fetchedRole);
+          } else {
+            console.log('No user document found in Firestore for UID:', user.uid);
+            setRole('user');
+            await AsyncStorage.setItem('userRole', 'user');
+          }
+        } catch (error) {
+          console.error('Error fetching user role from Firestore:', error);
+          console.log('Using default role: user');
+          setRole('user');
+          await AsyncStorage.setItem('userRole', 'user');
+        }
+      } else {
+        setUsername('User');
+        setPhotoURL('');
+        setRole('user');
+        // Clear cached role on logout
+        await AsyncStorage.removeItem('userRole');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSignIn = () => {
     setCurrentScreen('signup');
@@ -35,6 +100,11 @@ export default function App() {
 
   const handleBack = () => {
     setCurrentScreen('welcome');
+  };
+
+  const handleProfileUpdated = (newUsername: string, newPhotoURL: string) => {
+    setUsername(newUsername);
+    setPhotoURL(newPhotoURL);
   };
 
   if (currentScreen === 'home') {
@@ -52,6 +122,10 @@ export default function App() {
         onNavigateToWeather={() => setCurrentScreen('weather')}
         onNavigateToPayment={() => setCurrentScreen('payment')}
         onNavigateToPrice={() => setCurrentScreen('price')}
+        onNavigateToEditProfile={() => setCurrentScreen('editprofile')}
+        username={username}
+        photoURL={photoURL}
+        role={role}
       />
     );
   }
@@ -215,6 +289,17 @@ export default function App() {
       <LogInScreen
         onBack={handleBack}
         onLoginSuccess={() => setCurrentScreen('home')}
+      />
+    );
+  }
+
+  if (currentScreen === 'editprofile') {
+    return (
+      <EditProfileScreen
+        onBack={() => setCurrentScreen('home')}
+        currentUsername={username}
+        currentPhotoURL={photoURL}
+        onProfileUpdated={handleProfileUpdated}
       />
     );
   }

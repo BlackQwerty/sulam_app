@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft } from 'lucide-react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth, db } from '../firebase/firebaseConfig';
 import TextInput from '../components/TextInput';
 import Checkbox from '../components/Checkbox';
 import Button from '../components/Button';
@@ -31,6 +33,35 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
       console.log('User logged in successfully:', userCredential.user.email);
+
+      // Try to fetch and cache user role
+      try {
+        const userDocRef = doc(db, 'users', userCredential.user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const userRole = userData.role || 'user';
+
+          // Cache role in AsyncStorage
+          await AsyncStorage.setItem('userRole', userRole);
+          console.log('User role cached:', userRole);
+        } else {
+          console.log('No user document found, caching default role');
+          await AsyncStorage.setItem('userRole', 'user');
+        }
+      } catch (roleError) {
+        console.error('Error fetching role (will use default):', roleError);
+
+        // TEMPORARY FIX: Hardcode admin role for maroq@gmail.com
+        if (email.trim().toLowerCase() === 'maroq@gmail.com') {
+          await AsyncStorage.setItem('userRole', 'admin');
+          console.log('🔧 TEMPORARY FIX: Admin role set for maroq@gmail.com');
+        } else {
+          await AsyncStorage.setItem('userRole', 'user');
+        }
+      }
+
       Alert.alert('Success', 'Logged in successfully!', [
         {
           text: 'OK',

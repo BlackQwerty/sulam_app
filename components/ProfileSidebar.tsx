@@ -1,17 +1,31 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Animated, Dimensions, Modal, TouchableWithoutFeedback } from 'react-native';
-import { UserCircle, HelpCircle, LogOut } from 'lucide-react-native';
+import { UserCircle, HelpCircle, LogOut, User } from 'lucide-react-native';
 
 interface ProfileSidebarProps {
   isVisible: boolean;
   onClose: () => void;
   onLogout?: () => void;
+  onEditProfile?: () => void;
+  onHelp?: () => void;
+  username?: string;
+  photoURL?: string;
+  role?: string;
 }
 
 const { width } = Dimensions.get('window');
 const SIDEBAR_WIDTH = width * 0.75;
 
-export default function ProfileSidebar({ isVisible, onClose, onLogout }: ProfileSidebarProps) {
+export default function ProfileSidebar({
+  isVisible,
+  onClose,
+  onLogout,
+  onEditProfile,
+  onHelp,
+  username = 'User',
+  photoURL,
+  role = 'user'
+}: ProfileSidebarProps) {
   const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
 
   useEffect(() => {
@@ -50,17 +64,25 @@ export default function ProfileSidebar({ isVisible, onClose, onLogout }: Profile
           {/* Profile Section */}
           <View style={styles.profileSection}>
             <View style={styles.avatarContainer}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZXxlbnwwfDB8fHwxNzY0Nzg4NDExfDA&ixlib=rb-4.1.0&q=85' }}
-                style={styles.avatar}
-              />
+              {photoURL ? (
+                <Image
+                  source={{ uri: photoURL }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <View style={styles.avatarPlaceholder}>
+                  <User size={40} color="#fff" />
+                </View>
+              )}
             </View>
-            <Text style={styles.username}>NizarKacak</Text>
+            <Text style={styles.username}>{username}</Text>
 
             <View style={styles.roleContainer}>
               <Text style={styles.viewProfileText}>View profile</Text>
               <View style={styles.roleBadge}>
-                <Text style={styles.roleText}>Farmer</Text>
+                <Text style={styles.roleText}>
+                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                </Text>
               </View>
             </View>
           </View>
@@ -69,14 +91,14 @@ export default function ProfileSidebar({ isVisible, onClose, onLogout }: Profile
 
           {/* Menu Items */}
           <View style={styles.menuContainer}>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={onEditProfile}>
               <View style={styles.menuIconContainer}>
                 <UserCircle size={28} color="#fff" />
               </View>
               <Text style={styles.menuText}>Edit profile</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={onHelp}>
               <View style={styles.menuIconContainer}>
                 <HelpCircle size={28} color="#fff" />
               </View>
@@ -142,6 +164,13 @@ const styles = StyleSheet.create({
   avatar: {
     width: '100%',
     height: '100%',
+  },
+  avatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#006884',
   },
   username: {
     fontSize: 18,
