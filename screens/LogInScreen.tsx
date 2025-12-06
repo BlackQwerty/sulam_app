@@ -52,14 +52,7 @@ export default function LogInScreen({ onBack, onLoginSuccess }: LogInScreenProps
         }
       } catch (roleError) {
         console.error('Error fetching role (will use default):', roleError);
-
-        // TEMPORARY FIX: Hardcode admin role for maroq@gmail.com
-        if (email.trim().toLowerCase() === 'maroq@gmail.com') {
-          await AsyncStorage.setItem('userRole', 'admin');
-          console.log('🔧 TEMPORARY FIX: Admin role set for maroq@gmail.com');
-        } else {
-          await AsyncStorage.setItem('userRole', 'user');
-        }
+        await AsyncStorage.setItem('userRole', 'user');
       }
 
       Alert.alert('Success', 'Logged in successfully!', [
