@@ -14,6 +14,7 @@ interface NewSaleScreenProps {
   onNavigateToAbout?: () => void;
   onNavigateToPineBot?: () => void;
   onLogout?: () => void;
+  saleDetails?: any;
 }
 
 export default function NewSaleScreen({
@@ -23,7 +24,8 @@ export default function NewSaleScreen({
   onNavigateToAssistant,
   onNavigateToAbout,
   onNavigateToPineBot,
-  onLogout
+  onLogout,
+  saleDetails
 }: NewSaleScreenProps) {
   const [pincode, setPincode] = useState('');
 
@@ -72,7 +74,7 @@ export default function NewSaleScreen({
         {/* Product Image */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1618871737423-0c122edb760e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwzfHxGcmVzaCUyMHBpbmVhcHBsZXMlMjBncm91cGVkJTIwdG9nZXRoZXIlMjBpbiUyMGElMjBmYXJtJTIwb3IlMjBtYXJrZXQlMjBzZXR0aW5nfGVufDB8MHx8eWVsbG93fDE3NjQ3NzM0ODR8MA&ixlib=rb-4.1.0&q=85' }}
+            source={{ uri: saleDetails?.imageUrl || 'https://images.unsplash.com/photo-1618871737423-0c122edb760e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwzfHxGcmVzaCUyMHBpbmVhcHBsZXMlMjBncm91cGVkJTIwdG9nZXRoZXIlMjBpbiUyMGElMjBmYXJtJTIwb3IlMjBtYXJrZXQlMjBzZXR0aW5nfGVufDB8MHx8eWVsbG93fDE3NjQ3NzM0ODR8MA&ixlib=rb-4.1.0&q=85' }}
             style={styles.productImage}
             resizeMode="cover"
           />
@@ -81,7 +83,7 @@ export default function NewSaleScreen({
         {/* Product Info */}
         <View style={styles.productInfo}>
           <View style={styles.priceRow}>
-            <Text style={styles.productName}>Nenas Dewasa</Text>
+            <Text style={styles.productName}>{saleDetails?.title || 'Nenas Dewasa'}</Text>
             <Text style={styles.productPrice}>RM 200</Text>
           </View>
 
@@ -91,7 +93,7 @@ export default function NewSaleScreen({
           </View>
 
           <Text style={styles.description}>
-            Nenas Dewasa dijual secara borong
+            {saleDetails?.description || 'Nenas Dewasa dijual secara borong'}
           </Text>
 
           {/* Pincode Input */}

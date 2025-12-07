@@ -24,14 +24,19 @@ import PaymentManagementScreen from './screens/PaymentManagementScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
 import PineapplePriceScreen from './screens/PineapplePriceScreen';
 import PineappleIcon from './assets/kk.svg';
+import AdminDashboardScreen from './screens/AdminDashboardScreen';
+import AdminProductManagerScreen from './screens/AdminProductManagerScreen';
+import AdminSaleManagerScreen from './screens/AdminSaleManagerScreen';
 
-type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment' | 'price' | 'editprofile';
+type Screen = 'welcome' | 'signup' | 'login' | 'home' | 'product' | 'newsale' | 'location' | 'assistant' | 'about' | 'pinebot' | 'ordertracking' | 'dashboard' | 'weather' | 'payment' | 'price' | 'editprofile' | 'admin' | 'manage-products' | 'manage-sales';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [username, setUsername] = useState<string>('User');
   const [photoURL, setPhotoURL] = useState<string>('');
-  const [role, setRole] = useState<string>('user');
+  const [role, setRole] = useState<string>('farmer');
+
+  const [selectedSale, setSelectedSale] = useState<any>(null);
 
   // Track authentication state and user profile
   useEffect(() => {
@@ -54,7 +59,7 @@ export default function App() {
               console.log('🔥 [App] Real-time update received:', userData.role);
 
               // Update Role
-              const fetchedRole = userData.role || 'user';
+              const fetchedRole = userData.role || 'farmer';
               setRole(fetchedRole);
 
               // Update Username (Fixes "User" display issue)
@@ -68,7 +73,7 @@ export default function App() {
               console.log('⚠️ [App] Document missing (waiting for creation...)');
               // Don't overwrite with 'user' yet, keep loading or cache if possible
               // But if we truly have nothing, default to user
-              setRole('user');
+              setRole('farmer');
             }
           }, (error) => {
             // Ignore permission errors as they might happen during initial signup/auth race conditions
@@ -101,7 +106,7 @@ export default function App() {
         // User Logged Out
         setUsername('User');
         setPhotoURL('');
-        setRole('user');
+        setRole('farmer');
         await AsyncStorage.removeItem('userRole');
 
         // Cleanup snapshot listener if it exists
@@ -140,7 +145,10 @@ export default function App() {
     return (
       <HomeScreen
         onNavigateToProduct={() => setCurrentScreen('product')}
-        onNavigateToNewSale={() => setCurrentScreen('newsale')}
+        onNavigateToNewSale={(sale) => {
+          setSelectedSale(sale);
+          setCurrentScreen('newsale');
+        }}
         onNavigateToLocation={() => setCurrentScreen('location')}
         onNavigateToAssistant={() => setCurrentScreen('assistant')}
         onNavigateToAbout={() => setCurrentScreen('about')}
@@ -152,6 +160,7 @@ export default function App() {
         onNavigateToPayment={() => setCurrentScreen('payment')}
         onNavigateToPrice={() => setCurrentScreen('price')}
         onNavigateToEditProfile={() => setCurrentScreen('editprofile')}
+        onNavigateToAdmin={() => setCurrentScreen('admin')}
         username={username}
         photoURL={photoURL}
         role={role}
@@ -183,6 +192,7 @@ export default function App() {
         onNavigateToAbout={() => setCurrentScreen('about')}
         onNavigateToPineBot={() => setCurrentScreen('pinebot')}
         onLogout={() => setCurrentScreen('welcome')}
+        saleDetails={selectedSale}
       />
     );
   }
@@ -329,6 +339,32 @@ export default function App() {
         currentUsername={username}
         currentPhotoURL={photoURL}
         onProfileUpdated={handleProfileUpdated}
+      />
+    );
+  }
+
+  if (currentScreen === 'admin') {
+    return (
+      <AdminDashboardScreen
+        onBack={() => setCurrentScreen('home')}
+        onNavigateToManageProducts={() => setCurrentScreen('manage-products')}
+        onNavigateToManageSales={() => setCurrentScreen('manage-sales')}
+      />
+    );
+  }
+
+  if (currentScreen === 'manage-products') {
+    return (
+      <AdminProductManagerScreen
+        onBack={() => setCurrentScreen('admin')}
+      />
+    );
+  }
+
+  if (currentScreen === 'manage-sales') {
+    return (
+      <AdminSaleManagerScreen
+        onBack={() => setCurrentScreen('admin')}
       />
     );
   }

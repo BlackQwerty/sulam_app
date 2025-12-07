@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset, Truck, LayoutDashboard, CloudSun, CreditCard } from 'lucide-react-native';
+import { UserCircle, Bell, MapPin, Info, Bot, Home, Headset, Truck, LayoutDashboard, CloudSun, CreditCard, ShieldCheck } from 'lucide-react-native';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase/firebaseConfig';
 import BannerCard from '../components/BannerCard';
 import MenuButton from '../components/MenuButton';
 import ProfileSidebar from '../components/ProfileSidebar';
@@ -11,7 +13,7 @@ import BottomNavBar from '../components/BottomNavBar';
 
 interface HomeScreenProps {
   onNavigateToProduct?: () => void;
-  onNavigateToNewSale?: () => void;
+  onNavigateToNewSale?: (sale?: any) => void;
   onNavigateToLocation?: () => void;
   onNavigateToAssistant?: () => void;
   onNavigateToAbout?: () => void;
@@ -23,6 +25,7 @@ interface HomeScreenProps {
   onNavigateToPayment?: () => void;
   onNavigateToPrice?: () => void;
   onNavigateToEditProfile?: () => void;
+  onNavigateToAdmin?: () => void;
   username?: string;
   photoURL?: string;
   role?: string;
@@ -42,18 +45,27 @@ export default function HomeScreen({
   onNavigateToPayment,
   onNavigateToPrice,
   onNavigateToEditProfile,
+  onNavigateToAdmin,
   username = 'User',
   photoURL = '',
   role = 'user'
 }: HomeScreenProps) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [banners, setBanners] = useState<{ id: string, title: string, imageUrl: string, description?: string }[]>([]);
+
+  // Fetch announcements
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'announcements'), (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+      setBanners(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Debug: Log role value whenever it changes
   useEffect(() => {
-    console.log('🏠 [HomeScreen] Role prop received:', role);
-    console.log('🏠 [HomeScreen] Username prop received:', username);
-    console.log('🏠 [HomeScreen] PhotoURL prop received:', photoURL);
-  }, [role, username, photoURL]);
+    // console.log('🏠 [HomeScreen] Role prop received:', role);
+  }, [role]);
 
   const handleProfilePress = () => {
     setIsSidebarVisible(true);
@@ -81,12 +93,17 @@ export default function HomeScreen({
     }
   };
 
-  const handleBannerPress = (banner: string) => {
-    console.log(`${banner} banner pressed`);
-    if (banner === 'New Sale' && onNavigateToNewSale) {
-      onNavigateToNewSale();
-    } else if (banner === 'Today Price' && onNavigateToPrice) {
-      onNavigateToPrice();
+  const handleBannerPress = (banner: any) => {
+    console.log(`Banner pressed:`, banner);
+
+    // Check if it's the "New Sale" default or a dynamic banner
+    if (typeof banner === 'string' && banner === 'New Sale') {
+      if (onNavigateToNewSale) onNavigateToNewSale({ title: 'New Sale' });
+    } else if (typeof banner === 'string' && banner === 'Today Price') {
+      if (onNavigateToPrice) onNavigateToPrice();
+    } else {
+      // Is a dynamic object
+      if (onNavigateToNewSale) onNavigateToNewSale(banner);
     }
   };
 
@@ -147,11 +164,25 @@ export default function HomeScreen({
       >
         {/* Banners */}
         <View style={styles.bannersContainer}>
-          <BannerCard
-            title="NEW SALE"
-            imageUrl="https://images.unsplash.com/photo-1618871737423-0c122edb760e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxfHxGcmVzaCUyMHBpbmVhcHBsZXMlMjBmb3IlMjBzYWxlJTJDJTIwbXVsdGlwbGUlMjBwaW5lYXBwbGVzJTIwZ3JvdXBlZCUyMHRvZ2V0aGVyfGVufDB8MHx8eWVsbG93fDE3NjQ3Njg5ODZ8MA&ixlib=rb-4.1.0&q=85"
-            onPress={() => handleBannerPress('New Sale')}
-          />
+
+          {/* Dynamic Banners from Admin */}
+          {banners.length > 0 ? (
+            banners.map((item) => (
+              <BannerCard
+                key={item.id}
+                title={item.title}
+                imageUrl={item.imageUrl}
+                onPress={() => handleBannerPress(item)}
+              />
+            ))
+          ) : (
+            // Fallback default banner if no announcements exist
+            <BannerCard
+              title="NEW SALE"
+              imageUrl="https://images.unsplash.com/photo-1618871737423-0c122edb760e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxfHxGcmVzaCUyMHBpbmVhcHBsZXMlMjBmb3IlMjBzYWxlJTJDJTIwbXVsdGlwbGUlMjBwaW5lYXBwbGVzJTIwZ3JvdXBlZCUyMHRvZ2V0aGVyfGVufDB8MHx8eWVsbG93fDE3NjQ3Njg5ODZ8MA&ixlib=rb-4.1.0&q=85"
+              onPress={() => handleBannerPress('New Sale')}
+            />
+          )}
 
           <BannerCard
             title="TODAY PRICE"
@@ -214,6 +245,17 @@ export default function HomeScreen({
               onPress={() => onNavigateToPayment?.()}
             />
           </View>
+
+          {role === 'admin' && (
+            <View style={styles.menuRow}>
+              <MenuButton
+                title="ADMIN"
+                icon={<ShieldCheck size={48} color="#fff" />}
+                onPress={() => onNavigateToAdmin?.()}
+              />
+            </View>
+          )}
+
         </View>
       </ScrollView>
 

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft, Headset } from 'lucide-react-native';
 import ProductCard from '../components/ProductCard';
 import BottomNavBar from '../components/BottomNavBar';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase/firebaseConfig';
 
 interface ProductScreenProps {
   onNavigateHome?: () => void;
@@ -16,6 +19,15 @@ interface ProductScreenProps {
   onLogout?: () => void;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  stock: string;
+  price: string;
+  imageUrl: string;
+  badge?: string;
+}
+
 export default function ProductScreen({
   onNavigateHome,
   onNavigateToProduct,
@@ -25,6 +37,19 @@ export default function ProductScreen({
   onNavigateToPineBot,
   onLogout
 }: ProductScreenProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const productsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Product));
+      setProducts(productsData);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleCustomerServicePress = () => {
     console.log('Customer service pressed');
@@ -40,38 +65,6 @@ export default function ProductScreen({
   const handleDetailsPress = (productName: string) => {
     console.log(`${productName} details pressed`);
   };
-
-  const products = [
-    {
-      id: '1',
-      name: 'Nenas Dewasa',
-      stock: 'Stock : 87 pack',
-      price: 'RM 200',
-      imageUrl: 'https://images.unsplash.com/photo-1618871737423-0c122edb760e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwzfHxGcmVzaCUyMHBpbmVhcHBsZXMlMjBncm91cGVkJTIwdG9nZXRoZXIlMjBpbiUyMGElMjBmYXJtJTIwb3IlMjBtYXJrZXQlMjBzZXR0aW5nfGVufDB8MHx8eWVsbG93fDE3NjQ3NzM0ODR8MA&ixlib=rb-4.1.0&q=85',
-    },
-    {
-      id: '2',
-      name: 'Anak Pokok',
-      stock: 'Stock : 15 pack',
-      price: 'RM 27',
-      imageUrl: 'https://images.unsplash.com/photo-1706059924399-1e26828a627f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxfHxZb3VuZyUyMHBpbmVhcHBsZSUyMHBsYW50cyUyMGdyb3dpbmclMjBpbiUyMHJvd3MlMjBpbiUyMGFncmljdWx0dXJhbCUyMGZpZWxkfGVufDB8MHx8Z3JlZW58MTc2NDc3MzQ4NHww&ixlib=rb-4.1.0&q=85',
-    },
-    {
-      id: '3',
-      name: 'Pes Nanas',
-      stock: 'Stock : 15 pack',
-      price: 'RM 27',
-      imageUrl: 'https://images.unsplash.com/photo-1618871736709-0843f4cfc85b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTAwNDR8MHwxfHNlYXJjaHwxfHxQaW5lYXBwbGUlMjBkZXNzZXJ0JTIwb3IlMjBmb29kJTIwcHJvZHVjdCUyMGluJTIwY29udGFpbmVyfGVufDB8Mnx8eWVsbG93fDE3NjQ3NzM0ODR8MA&ixlib=rb-4.1.0&q=85',
-    },
-    {
-      id: '4',
-      name: 'Baja Nanas',
-      stock: 'Stock : 15',
-      price: 'RM 85',
-      imageUrl: 'https://images.pexels.com/photos/30801526/pexels-photo-30801526.jpeg',
-      badge: 'Official Store',
-    },
-  ];
 
   return (
     <SafeAreaView style={styles.container}>
